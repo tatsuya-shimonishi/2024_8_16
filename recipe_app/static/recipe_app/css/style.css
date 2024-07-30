@@ -1,0 +1,45 @@
+h1, div {
+    text-align: center;
+}
+
+.img-max-height-50vh img {
+    max-height: 50vh;
+}
+
+.img-max-height-80vh img {
+    max-height: 80vh;
+}
+
+#favorite-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#favorite-button svg {
+    fill: red;
+}
+
+#favorite-button:hover svg {
+    fill: darkred;
+}
+
+.image-container {
+    display: inline-block;
+    position: relative;
+}
+
+.svg-overlay {
+    position: absolute;
+    right: 3px;
+}
+
+.image-label {
+    position: absolute;
+    bottom: 0;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    background-color: white;
+    padding: 3px 10px;
+}

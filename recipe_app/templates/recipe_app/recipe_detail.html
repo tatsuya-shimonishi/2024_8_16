@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    {% include "recipe_app/head.html"%}
+</head>
+
+<body class="container">
+    <h1 class="border border-5">簡単☆お店の味の回鍋肉</h1>
+    <div class="mx-auto text-cente img-max-height-50vh">
+        <div class="image-container mt-1">
+            <img class="img-fluid img-thumbnail" src="{% static 'recipe_app/images/syusai.webp' %}" alt="">
+            <button id="favorite-button" class="svg-overlay">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 材料 -->
+        <div class="text-start d-inline-block">
+            <p class="d-inline-block border border-5 my-1 p-1 px-2">
+                材料（3〜4人分）
+            </p>
+            <div class="border border-5 text-start pe-3">
+                <table class="m-1 mx-2 mb-2 col-12">
+                    <tr class="border-bottom">
+                        <td>豚こま肉</td>
+                        <td class="text-end">150g</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>キャベツ</td>
+                        <td class="text-end">3枚ほど</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>ピーマン</td>
+                        <td class="text-end">2個</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>●甜麺醤（テンメンジャン）</td>
+                        <td class="text-end">大さじ1強</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>●醤油</td>
+                        <td class="text-end">大さじ1</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>●酒</td>
+                        <td class="text-end">大さじ1</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>●水</td>
+                        <td class="text-end">大さじ1</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>●砂糖</td>
+                        <td class="text-end">小さじ1</td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td>●片栗粉</td>
+                        <td class="text-end">小さじ1</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- 作り方 -->
+        <div class="text-start d-inline-block mt-3">
+            <p class="d-inline-block border border-5 my-1 p-1 px-2">
+                作り方
+            </p>
+            <div class="border border-5 text-start">
+                <ol class="lh-lg my-2">
+                    <li>●は合わせておく。キャベツはざく切りに、ピーマンは細切りにしておく。</li>
+                    <li>フライパンに油を熱し、豚こまを色が変わるまで炒める。</li>
+                    <li>色が変わってきたらキャベツ、ピーマンを加えよく炒める。</li>
+                    <li>よく炒めたら、弱めの中火にして合わせておいた●を入れて手早く炒めたら完成！</li>
+                </ol>
+            </div>
+        </div>
+        <!-- コツ・ポイント -->
+        <div class="text-start d-inline-block mt-3">
+            <p class="d-inline-block border border-5 my-1 p-1 px-2">
+                コツ・ポイント
+            </p>
+            <p class="border border-5 p-1 px-2">
+                工程4のとき、片栗粉が下に沈殿しているのでよく混ぜてから加えてください。<br>
+                豚肉や野菜を炒める時は強めの中火で炒めてください。お好みで豆板醤を小さじ1入れても辛くて美味しいですよ！
+            </p>
+        </div>
+    </div>
+
+    <!-- リンク -->
+    <div class="mx-auto mt-3 text-center">
+        <a href="{% url 'index' %}">
+            <p class="border border-5 fs-5">ホームへ</p>
+        </a>
+        <a href="{% url 'recipe_list' %}">
+            <p class="border border-5 fs-5">レシピ一覧へ</p>
+        </a>
+    </div>
+
+    <!-- お気に入りボタン制御 -->
+    <script src="{% static 'recipe_app/js/favorite.js' %}"></script>
+</body>
+
+</html>

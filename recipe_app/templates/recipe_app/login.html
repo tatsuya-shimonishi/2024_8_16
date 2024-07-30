@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    {% include "recipe_app/head.html"%}
+</head>
+
+<body class="container">
+    <!-- <div>
+        <h2 class="my-4">ログイン</h2>
+        <div class="d-inline-block">
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <p><input class="form-control" type="text" name="id" placeholder="ID(メールアドレス)"></p>
+                <p><input class="form-control" type="password" name="password" placeholder="パスワード"></p>
+                <p><input class="btn btn-primary ratio" type="submit" value="ログイン"></p>
+            </form>
+            <hr>
+            <a href="{% url 'signup' %}"><button type="button" class="btn btn-secondary">新規登録</button></a>
+        </div>
+    </div>
+    <hr> -->
+    <div>
+        <h2 class="my-4">ログイン</h2>
+        <div class="d-inline-block">
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <p>{{ field }}</p>
+                {% endfor %}
+                <p><input class="btn btn-primary ratio" type="submit" value="ログイン"></p>
+            </form>
+            <hr>
+            <a href="{% url 'signup' %}"><button type="button" class="btn btn-secondary">新規登録</button></a>
+        </div>
+    </div>
+</body>
+
+</html>

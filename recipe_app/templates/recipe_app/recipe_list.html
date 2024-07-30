@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    {% include "recipe_app/head.html" %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body class="container">
+    <!-- タブ -->
+    <ul class="nav nav-tabs nav-justified">
+        <li class="w-25 active"><a data-toggle="tab" href="#recipe_list_1">主菜</a></li>
+        <li class="w-25"><a data-toggle="tab" href="#recipe_list_2">副菜</a></li>
+        <li class="w-25"><a data-toggle="tab" href="#recipe_list_3">汁物</a></li>
+        <li class="w-25"><a data-toggle="tab" href="#recipe_list_4">デザート</a></li>
+    </ul>
+
+    <!-- コンテンツ -->
+    <div class="tab-content text-center img-max-height-80vh">
+        <!-- 主菜 -->
+        <div id="recipe_list_1" class="tab-pane fade in active">
+            <div class="mx-auto mt-3 d-flex justify-content-around">
+                <div class="image-container mx-1">
+                    <img id="main_img" class="img-fluid img-thumbnail"
+                        src="{% static 'recipe_app/images/fukusai.webp' %}" alt="簡単小松菜えのき醤油和え">
+                    <button id="favorite-button" class="svg-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-star" viewBox="0 0 16 16">
+                            <path
+                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>
+                    </button>
+                    <p class="image-label">簡単小松菜えのき醤油和え</p>
+                </div>
+                <div class="image-container mx-1">
+                    <img id="main_img" class="img-fluid img-thumbnail"
+                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
+                    <button id="favorite-button" class="svg-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-star" viewBox="0 0 16 16">
+                            <path
+                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>
+                    </button>
+                    <p class="image-label">きのことおかかの汁物</p>
+                </div>
+            </div>
+            <div class="mx-auto mt-3 d-flex justify-content-around">
+                <div class="image-container mx-1">
+                    <img id="main_img" class="img-fluid img-thumbnail"
+                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
+                    <button id="favorite-button" class="svg-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-star" viewBox="0 0 16 16">
+                            <path
+                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>
+                    </button>
+                    <p class="image-label">きのことおかかの汁物</p>
+                </div>
+                <div class="image-container mx-1">
+                    <img id="main_img" class="img-fluid img-thumbnail"
+                        src="{% static 'recipe_app/images/fukusai.webp' %}" alt="簡単小松菜えのき醤油和え">
+                    <button id="favorite-button" class="svg-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-star" viewBox="0 0 16 16">
+                            <path
+                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>
+                    </button>
+                    <p class="image-label">簡単小松菜えのき醤油和え</p>
+                </div>
+            </div>
+            <div class="mx-auto mt-3 d-flex justify-content-around">
+                <div class="image-container mx-1">
+                    <img id="main_img" class="img-fluid img-thumbnail"
+                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
+                    <button id="favorite-button" class="svg-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-star" viewBox="0 0 16 16">
+                            <path
+                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>
+                    </button>
+                    <p class="image-label">きのことおかかの汁物</p>
+                </div>
+                <div class="image-container mx-1">
+                    <img id="main_img" class="img-fluid img-thumbnail"
+                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
+                    <button id="favorite-button" class="svg-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-star" viewBox="0 0 16 16">
+                            <path
+                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>
+                    </button>
+                    <p class="image-label">きのことおかかの汁物</p>
+                </div>
+            </div>
+            <!-- ページネーション -->
+            {% include "recipe_app/pagination.html" %}
+        </div>
+
+        <!-- 副菜 -->
+        <div id="recipe_list_2" class="tab-pane fade">
+            <h3>recipe_list_ 3</h3>
+            <p>メニ4ー2</p>
+            <!-- ページネーション -->
+            {% include "recipe_app/pagination.html" %}
+        </div>
+
+        <!-- 汁物 -->
+        <div id="recipe_list_3" class="tab-pane fade">
+            <h3>recipe_list_ 3</h3>
+            <p>メニュー3</p>
+            <!-- ページネーション -->
+            {% include "recipe_app/pagination.html" %}
+        </div>
+
+        <!-- デザート -->
+        <div id="recipe_list_4" class="tab-pane fade">
+            <h3>recipe_list_ 4</h3>
+            <p>メニュー4</p>
+            <!-- ページネーション -->
+            {% include "recipe_app/pagination.html" %}
+        </div>
+    </div>
+
+    <!-- ホーム -->
+    <div class="mx-auto mt-3 text-center">
+        <a href="{% url 'index' %}"><p class="border border-5 fs-3">ホームへ</p></a>
+    </div>
+
+    <!-- お気に入りボタン制御 -->
+    <script src="{% static 'recipe_app/js/favorite.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+
+■ ターミナルを起動（ctrl + Shift + @）
+rem ターミナルをコマンドプロンプトに変更
+
+■ Webサーバーを起動
+cd C:\Users\frontier-Python\Desktop\Django\RecipeProject
+python manage.py runserver
+
+◆マイグレーション
+python manage.py makemigrations recipe_app
+python manage.py migrate
+
+◆スーパーユーザーの作成
+python manage.py createsuperuser
+
+◆仮想環境を終了
+deactivate
+
