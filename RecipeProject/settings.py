@@ -123,4 +123,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# 向き先をカスタムユーザモデルにする
 AUTH_USER_MODEL = 'recipe_app.CustomUser'

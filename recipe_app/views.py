@@ -1,6 +1,7 @@
-from typing import Any
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.contrib.auth import login, authenticate
+from django.views.generic import TemplateView, CreateView
+from django.urls import reverse_lazy
 from .models import *
 from .forms import *
 
@@ -37,33 +38,6 @@ class Login(TemplateView):
         return render(request, "recipe_app/login.html", self.params)
 
 # 新規登録
-# class Signup(TemplateView):
-#     def __init__(self) -> None:
-#         self.params = {
-#             'title': '新規登録',
-#             'form': UserForm(),
-#             'alert': '',
-#         }
-    
-#     def get(self, request):
-#         return render(request, "recipe_app/signup.html", self.params)
-    
-#     def post(self, request):
-#         obj = CustomUser()
-#         form = UserForm(request.POST, instance=obj)
-#         form.save()
-#         self.params["alert"] = f"登録完了！（名前：{request.POST['username']}）"
-#         return render(request, "recipe_app/signup.html", self.params)
-
-
-# 試作--------------------------
-
-from django.contrib.auth import login, authenticate
-from django.views.generic import TemplateView, CreateView
-from django.urls import reverse_lazy
-from .forms import SignUpForm
-
-# ユーザー登録
 class SignupView(CreateView):
     form_class = SignUpForm
     template_name = "recipe_app/signup.html" 
