@@ -14,26 +14,26 @@
             <form action="{% url 'signup' %}" method="post">
                 {% csrf_token %}
                 {% for field in form %}
-                {% if field.errors %}
-                    <!-- エラー発生時の表示 -->
-                    <p class="is-invalid mb-0 px-3 row">
-                        <!-- フォームの各項目を出力 -->
-                        <label class="col-form-label col-sm-5 text-start">{{ field.label }}</label>
-                        {{ field }}
-                    </p>
-                    {% for error in field.errors %}
-                    <p class="invalid-feedback ms-3 text-start">{{ error }}</p>
-                    {% endfor %}
-                {% else %}
-                    <!-- 初期表示 -->
-                    <p class="row px-3 is-invalid">
-                        <!-- フォームの各項目を出力 -->
-                        <label class="col-form-label col-sm-5 text-start">{{ field.label }}</label>
-                        {{ field }}
-                    </p>
-                {% endif %}
+                    {% if field.errors %}
+                        <!-- エラー発生時の表示 -->
+                        <p class="is-invalid mb-0 px-3 row">
+                            <!-- フォームの各項目を出力 -->
+                            <label class="col-form-label col-sm-5 text-start">{{ field.label }}</label>
+                            {{ field }}
+                        </p>
+                        {% for error in field.errors %}
+                        <p class="invalid-feedback ms-3 text-start">{{ error }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <!-- 初期表示 -->
+                        <p class="row px-3 is-invalid">
+                            <!-- フォームの各項目を出力 -->
+                            <label class="col-form-label col-sm-5 text-start">{{ field.label }}</label>
+                            {{ field }}
+                        </p>
+                    {% endif %}
                 {% endfor %}
-                <p class="mt-5"><input class="btn btn-primary" type="submit" value="登録"></p>
+                <p class="mt-3"><input class="btn btn-primary" type="submit" value="登録"></p>
             </form>
         </div>
     </div>

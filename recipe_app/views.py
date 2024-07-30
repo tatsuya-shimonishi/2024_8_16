@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import login, authenticate
-from django.views.generic import TemplateView, CreateView
+from django.contrib.auth.views import LoginView
+from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .models import *
 from .forms import *
@@ -24,30 +25,13 @@ def recipe_detail(request):
     return render(request, 'recipe_app/recipe_detail.html', params)
 
 # ログイン
-class Login(TemplateView):
-    def __init__(self) -> None:
-        self.params = {
-            'title': 'ログイン',
-            'form': LoginForm(),
-        }
+class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
+    template_name = 'recipe_app/login.html'
+    success_url = reverse_lazy("login")
     
-    def get(self, request):
-        return render(request, "recipe_app/login.html", self.params)
-    
-    def post(self, request):
-        return render(request, "recipe_app/login.html", self.params)
-
-# 新規登録
-class SignupView(CreateView):
-    form_class = SignUpForm
-    template_name = "recipe_app/signup.html" 
-    # ユーザー登録後のリダイレクト先ページ
-    success_url = reverse_lazy("index")
-
-    """ ユーザー作成後にそのままログイン状態にする処理 """
     # フォームが正常に検証された場合
     def form_valid(self, form):
-        # フォームへの入力内容を保存
         response = super().form_valid(form)
         username = form.cleaned_data.get("username")
         password = form.cleaned_data.get("password1")
@@ -58,3 +42,19 @@ class SignupView(CreateView):
             login(self.request, user)
             print("OK")
         return response
+
+# 新規登録
+class SignupView(CreateView):
+    form_class = SignUpForm
+    template_name = "recipe_app/signup.html" 
+    # ユーザー登録後のリダイレクト先ページ
+    success_url = reverse_lazy("login")
+
+    # フォームが正常に検証された場合
+    def form_valid(self, form):
+        # フォームへの入力内容を保存
+        response = super().form_valid(form)
+        return response
+
+
+
