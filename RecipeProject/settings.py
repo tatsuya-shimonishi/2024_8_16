@@ -128,5 +128,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'recipe_app.CustomUser'
 
 # ログイン/ログアウト後のリダイレクト先
+LOGIN_URL = '/recipe_app/login/'
 LOGIN_REDIRECT_URL = '/recipe_app/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/recipe_app/login/'
+
+# セッションエンジンの設定（デフォルトはデータベース）
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# セッションの有効期限（秒）
+SESSION_COOKIE_AGE = 300  # 5分

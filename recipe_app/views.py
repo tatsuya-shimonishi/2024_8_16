@@ -1,23 +1,27 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import *
 
+@login_required
 def index(request):
     params = {
         'title': 'ホーム'
     }
     return render(request, 'recipe_app/index.html', params)
 
+@login_required
 def recipe_list(request):
     params = {
         'title': 'レシピ一覧'
     }
     return render(request, 'recipe_app/recipe_list.html', params)
-    
+
+@login_required
 def recipe_detail(request):
     params = {
         'title': '作り方'
@@ -28,7 +32,6 @@ def recipe_detail(request):
 class CustomLoginView(LoginView):
     form_class = CustomLoginForm
     template_name = 'recipe_app/login.html'
-    success_url = reverse_lazy("login")
     
     # フォームが正常に検証された場合
     def form_valid(self, form):
@@ -40,7 +43,6 @@ class CustomLoginView(LoginView):
         # ログイン
         if user is not None:
             login(self.request, user)
-            print("OK")
         return response
 
 # 新規登録
