@@ -1,0 +1,15 @@
+<header class="bg-white sticky-top">    
+    <div class="d-flex justify-content-between">
+        <h1><a href="{% url 'index' %}">Home</a></h1>
+        <div class="align-content-end mb-3">
+            <span>こんにちは {{ user.username }} さん</span>
+            <a class="ms-4" href="{% url 'logout' %}">ログアウト</a>
+        </div>
+    </div>
+    <ol class="breadcrumb mb-3">
+        <li class="breadcrumb-item"><a href="{% url 'index' %}">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'recipe_list' %}">レシピ一覧</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'recipe_detail' %}">作り方</a></li>
+        <li class="breadcrumb-item active" aria-current="page">予備</li>
+    </ol>
+</header>

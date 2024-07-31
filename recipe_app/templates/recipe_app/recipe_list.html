@@ -4,10 +4,10 @@
 
 <head>
     {% include "recipe_app/head.html" %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 
 <body class="container">
+    {% include "recipe_app/header.html" %}
     <!-- タブ -->
     <ul class="nav nav-tabs nav-justified">
         <li class="w-25 active"><a data-toggle="tab" href="#recipe_list_1">主菜</a></li>
@@ -129,7 +129,9 @@
 
     <!-- ホーム -->
     <div class="mx-auto mt-3 text-center">
-        <a href="{% url 'index' %}"><p class="border border-5 fs-3">ホームへ</p></a>
+        <a href="{% url 'index' %}">
+            <p class="border border-5 fs-3">ホームへ</p>
+        </a>
     </div>
 
     <!-- お気に入りボタン制御 -->

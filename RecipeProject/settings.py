@@ -136,4 +136,4 @@ LOGOUT_REDIRECT_URL = '/recipe_app/login/'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # セッションの有効期限（秒）
-SESSION_COOKIE_AGE = 300  # 5分
+SESSION_COOKIE_AGE = 3000  # 50分
