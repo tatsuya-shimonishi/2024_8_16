@@ -94,6 +94,9 @@ def get_recipe_detail(recipe_detail_url):
         img_src = step_data.select_one('img')['src']
         step_img = get_image(img_src)
         step_text = step_data.select_one('.step_text').get_text(strip=True)
+    # コツ
+    memo_tmp = soup.select_one('#memo_wrapper')
+    memo = memo_tmp.select_one('.text_content').get_text(strip=True)
     
     data = {
         "title": title,
@@ -104,3 +107,5 @@ def get_recipe_detail(recipe_detail_url):
     
     return data
 
+# recipe_detail_url = get_recipe_list(search_query="肉")
+# get_recipe_detail(recipe_detail_url[0]["recipe_detail_url"])

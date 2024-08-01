@@ -21,10 +21,11 @@ class CookingCategory(models.Model):
 class Recipe(models.Model):
     name = models.CharField(max_length=200)
     url = models.URLField(max_length=300)
+    cooking_category = models.ForeignKey(CookingCategory, on_delete=models.CASCADE)
     img = models.ImageField(upload_to='products/images/')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    cooking_category = models.ForeignKey(CookingCategory, on_delete=models.CASCADE)
     servings = models.CharField(max_length=200)
+    memo = models.TextField()
     def __str__(self):
         return f"<Recipe> id:{self.id} name:{self.name}"
 
@@ -33,7 +34,7 @@ class Favorite(models.Model):
     custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     def __str__(self):
-        return f"<Favorite> custom_user:{self.custom_user} recipe:{self.recipe}"
+        return f"<Favorite> custom_user:{self.custom_user} recipe:{self.recipe.name}"
 
 # 食材名管理
 class IngredientName(models.Model):
@@ -45,17 +46,17 @@ class IngredientName(models.Model):
 class Instruction(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     order = models.IntegerField()
-    detail = models.CharField(max_length=1000)
     img = models.ImageField(upload_to='products/images/')
+    detail = models.TextField()
     def __str__(self):
-        return f"<Instruction> id:{self.id} name:{self.name}"
+        return f"<Instruction> id:{self.id} recipe:{self.recipe.name} order:{self.order}"
 
 # 材料管理
 class Ingredients(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredientName = models.ForeignKey(IngredientName, on_delete=models.CASCADE)
+    amount = models.CharField(max_length=200)
     order = models.IntegerField()
-    amount = models.IntegerField()
     def __str__(self):
-        return f"<Ingredients> id:{self.id} name:{self.name}"
+        return f"<Ingredients> id:{self.id} recipe:{self.recipe.name} ingredientName:{self.ingredientName.name}"
 
