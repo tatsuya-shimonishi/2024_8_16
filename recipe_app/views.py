@@ -6,12 +6,18 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import *
+from .scraper import *
 
 @login_required
 def index(request):
     params = {
         'title': 'ホーム'
     }
+    search_word="肉"
+    cooking_category = CookingCategory.objects.get(name="主菜").name
+    recipe_detail_url = get_recipe_list(search_word, cooking_category)
+    get_recipe_detail(recipe_detail_url[0]["recipe_detail_url"], cooking_category)
+    
     return render(request, 'recipe_app/index.html', params)
 
 @login_required
@@ -25,7 +31,7 @@ def recipe_list(request):
 def recipe_detail(request):
     params = {
         'title': '作り方'
-    }
+    }    
     return render(request, 'recipe_app/recipe_detail.html', params)
 
 # ログイン

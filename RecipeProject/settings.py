@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -137,3 +138,6 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # セッションの有効期限（秒）
 SESSION_COOKIE_AGE = 3000  # 50分
+
+MEDIA_URL = '/recipe_app/static/recipe_app/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'recipe_app/static/recipe_app/')

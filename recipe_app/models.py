@@ -22,10 +22,10 @@ class Recipe(models.Model):
     name = models.CharField(max_length=200)
     url = models.URLField(max_length=300)
     cooking_category = models.ForeignKey(CookingCategory, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='products/images/')
+    img = models.ImageField(upload_to='images/', null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    servings = models.CharField(max_length=200)
-    memo = models.TextField()
+    servings = models.CharField(max_length=200, blank=True)
+    memo = models.TextField(blank=True)
     def __str__(self):
         return f"<Recipe> id:{self.id} name:{self.name}"
 
@@ -46,8 +46,8 @@ class IngredientName(models.Model):
 class Instruction(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     order = models.IntegerField()
-    img = models.ImageField(upload_to='products/images/')
-    detail = models.TextField()
+    img = models.ImageField(upload_to='products/images/', null=True, blank=True)
+    detail = models.TextField(blank=True)
     def __str__(self):
         return f"<Instruction> id:{self.id} recipe:{self.recipe.name} order:{self.order}"
 
