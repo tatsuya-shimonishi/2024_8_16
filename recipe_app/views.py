@@ -1,3 +1,4 @@
+from time import sleep
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -8,15 +9,24 @@ from .models import *
 from .forms import *
 from .scraper import *
 
+
 @login_required
 def index(request):
     params = {
         'title': 'ホーム'
     }
-    search_word="肉"
-    cooking_category = CookingCategory.objects.get(name="主菜").name
-    recipe_detail_url = get_recipe_list(search_word, cooking_category)
-    get_recipe_detail(recipe_detail_url[1]["recipe_detail_url"], cooking_category)
+    
+    """ レシピデータ取得処理 """
+    # search_word=""
+    # cooking_category_word = "主菜"
+    # get_data_count = 10
+    # cooking_category = CookingCategory.objects.get(name=cooking_category_word).name
+    # recipe_detail_url = get_recipe_list(search_word, cooking_category)
+    # i = 0
+    # for i in range(get_data_count):
+    #     get_recipe_detail(recipe_detail_url[i]["recipe_detail_url"], cooking_category)
+    #     # スクレイピングを1秒待つ
+    #     sleep(1)
     
     return render(request, 'recipe_app/index.html', params)
 

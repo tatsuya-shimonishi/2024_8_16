@@ -1,3 +1,4 @@
+from time import sleep
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -28,13 +29,15 @@ def get_recipe_list(search_word, cooking_category):
         for item in soup.select('.recipe-preview'):
             title = item.select_one('.recipe-title').get_text(strip=True)
             url = item.select_one('a')['href']
+            
             recipes.append({
                 'title': title,
                 'recipe_detail_url': url
             })
+            
+            # スクレイピングを1秒待つ
+            sleep(1)
         
-        # print(recipes)
-    
     return recipes
 
 
@@ -131,12 +134,18 @@ def get_recipe_detail(recipe_detail_url, cooking_category):
         count += 1
         name_data = None
         data = None
+        amount = None
+        ingredients_name = None
         
         name_data = ingredients_data.select_one(".ingredient_name")
         if name_data:
             ingredients_name = name_data.get_text(strip=True)
         else:
-            ingredients_name = ingredients_data.select_one(".ingredient_category").get_text(strip=True)
+            ingredients_data = ingredients_data.select_one(".ingredient_category")
+            if ingredients_data:
+                ingredients_name = ingredients_data.get_text(strip=True)
+            else:
+                continue
             
         data = ingredients_data.select_one(".ingredient_quantity")
         if data:
