@@ -42,15 +42,6 @@ class IngredientName(models.Model):
     def __str__(self):
         return f"<IngredientName> id:{self.id} name:{self.name}"
 
-# 作り方管理
-class Instruction(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    order = models.IntegerField()
-    img = models.ImageField(upload_to='products/images/', null=True, blank=True)
-    detail = models.TextField(blank=True)
-    def __str__(self):
-        return f"<Instruction> id:{self.id} recipe:{self.recipe.name} order:{self.order}"
-
 # 材料管理
 class Ingredients(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
@@ -59,4 +50,13 @@ class Ingredients(models.Model):
     order = models.IntegerField()
     def __str__(self):
         return f"<Ingredients> id:{self.id} recipe:{self.recipe.name} ingredientName:{self.ingredientName.name}"
+
+# 作り方管理
+class Instruction(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    order = models.IntegerField()
+    img = models.ImageField(upload_to='images/', null=True, blank=True)
+    detail = models.TextField(blank=True)
+    def __str__(self):
+        return f"<Instruction> id:{self.id} recipe:{self.recipe.name} order:{self.order}"
 

@@ -16,7 +16,7 @@ def index(request):
     search_word="肉"
     cooking_category = CookingCategory.objects.get(name="主菜").name
     recipe_detail_url = get_recipe_list(search_word, cooking_category)
-    get_recipe_detail(recipe_detail_url[0]["recipe_detail_url"], cooking_category)
+    get_recipe_detail(recipe_detail_url[1]["recipe_detail_url"], cooking_category)
     
     return render(request, 'recipe_app/index.html', params)
 
