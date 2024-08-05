@@ -1,3 +1,4 @@
+import random
 from time import sleep
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -9,14 +10,26 @@ from .models import *
 from .forms import *
 from .scraper import *
 
+""" 定数 """
+COOKING_CATEGORY_MAIN   = "主菜"
+COOKING_CATEGORY_SUB    = "副菜"
+COOKING_CATEGORY_SOUP   = "汁物"
+COOKING_CATEGORY_DESERT = "デザート"
+COOKING_CATEGORY_LIST   = {
+    "main"  : COOKING_CATEGORY_MAIN,
+    "sub"   : COOKING_CATEGORY_SUB,
+    "soup"  : COOKING_CATEGORY_SOUP,
+    "desert": COOKING_CATEGORY_DESERT,
+}
 
+""" ホーム """
 @login_required
 def index(request):
     params = {
         'title': 'ホーム'
     }
     
-    """ レシピデータ取得処理 """
+    """ レシピのスクレイピング """
     # search_word=""
     # cooking_category_word = "主菜"
     # get_data_count = 10
@@ -28,8 +41,19 @@ def index(request):
     #     # スクレイピングを1秒待つ
     #     sleep(1)
     
+    """ DBよりレシピの取得 """
+    # 各レシピを取得（主菜、副菜、汁物、デザート）
+    for key, value in COOKING_CATEGORY_LIST.items():
+        cooking_category = CookingCategory.objects.get(name=value)
+        # 料理区分を指定してレシピ一覧を取得
+        main_records = list(Recipe.objects.filter(cooking_category=cooking_category))
+        # レシピ一覧からランダムに1件抽出
+        main_record = random.choice(main_records)
+        params[key] = main_record
+    
     return render(request, 'recipe_app/index.html', params)
 
+""" レシピ一覧 """
 @login_required
 def recipe_list(request):
     params = {
@@ -37,6 +61,7 @@ def recipe_list(request):
     }
     return render(request, 'recipe_app/recipe_list.html', params)
 
+""" 作り方 """
 @login_required
 def recipe_detail(request):
     params = {
@@ -44,7 +69,7 @@ def recipe_detail(request):
     }    
     return render(request, 'recipe_app/recipe_detail.html', params)
 
-# ログイン
+""" ログイン """
 class CustomLoginView(LoginView):
     form_class = CustomLoginForm
     template_name = 'recipe_app/login.html'
@@ -61,7 +86,7 @@ class CustomLoginView(LoginView):
             login(self.request, user)
         return response
 
-# 新規登録
+""" 新規登録 """
 class SignupView(CreateView):
     form_class = SignUpForm
     template_name = "recipe_app/signup.html" 
