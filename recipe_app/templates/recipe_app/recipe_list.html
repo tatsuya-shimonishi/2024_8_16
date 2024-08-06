@@ -94,10 +94,6 @@
     <!-- お気に入りボタン制御 -->
     <script src="{% static 'recipe_app/js/favorite.js' %}"></script>
 
-    <script type="text/javascript">
-        const staticUrl = "{% static 'recipe_app/' %}";
-    </script>
-
     <!-- タブとページネーションを制御 -->
     <script>
         // ドキュメントが読み込まれた後に実行
@@ -111,7 +107,7 @@
                     success: function(data) {
                         const itemsContainer = $(`#${tab}-items-container`);
                         const paginationList = $(`#${tab}-pagination`);
-                        const itemCount = data.items.length;
+                        const staticUrl = `{% static 'recipe_app/' %}`;
                         let htmlContent = ``;
                         let item4 = ``;
                         
