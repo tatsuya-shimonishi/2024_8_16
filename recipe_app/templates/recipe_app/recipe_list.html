@@ -4,126 +4,81 @@
 
 <head>
     {% include "recipe_app/head.html" %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="container">
     {% include "recipe_app/header.html" %}
+    
     <!-- タブ -->
-    <ul class="nav nav-tabs nav-justified">
-        <li class="w-25 active"><a data-toggle="tab" href="#recipe_list_1">主菜</a></li>
-        <li class="w-25"><a data-toggle="tab" href="#recipe_list_2">副菜</a></li>
-        <li class="w-25"><a data-toggle="tab" href="#recipe_list_3">汁物</a></li>
-        <li class="w-25"><a data-toggle="tab" href="#recipe_list_4">デザート</a></li>
+    <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+        <li class="w-25 nav-item active">
+            <a class="nav-link" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true" data-tab="tab1">主菜</a>
+        </li>
+        <li class="w-25 nav-item">
+            <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false" data-tab="tab2">副菜</a>
+        </li>
+        <li class="w-25 nav-item">
+            <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false" data-tab="tab3">汁物</a>
+        </li>
+        <li class="w-25 nav-item">
+            <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false" data-tab="tab4">デザート</a>
+        </li>
     </ul>
 
     <!-- コンテンツ -->
-    <div class="tab-content text-center img-max-height-80vh">
-        <!-- 主菜 -->
-        <div id="recipe_list_1" class="tab-pane fade in active">
-            <div class="mx-auto mt-3 d-flex justify-content-around">
-                <div class="image-container mx-1">
-                    <img id="main_img" class="img-fluid img-thumbnail"
-                        src="{% static 'recipe_app/images/fukusai.webp' %}" alt="簡単小松菜えのき醤油和え">
-                    <button id="favorite-button" class="svg-overlay">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-star" viewBox="0 0 16 16">
-                            <path
-                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                        </svg>
-                    </button>
-                    <p class="image-label">簡単小松菜えのき醤油和え</p>
-                </div>
-                <div class="image-container mx-1">
-                    <img id="main_img" class="img-fluid img-thumbnail"
-                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
-                    <button id="favorite-button" class="svg-overlay">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-star" viewBox="0 0 16 16">
-                            <path
-                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                        </svg>
-                    </button>
-                    <p class="image-label">きのことおかかの汁物</p>
-                </div>
-            </div>
-            <div class="mx-auto mt-3 d-flex justify-content-around">
-                <div class="image-container mx-1">
-                    <img id="main_img" class="img-fluid img-thumbnail"
-                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
-                    <button id="favorite-button" class="svg-overlay">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-star" viewBox="0 0 16 16">
-                            <path
-                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                        </svg>
-                    </button>
-                    <p class="image-label">きのことおかかの汁物</p>
-                </div>
-                <div class="image-container mx-1">
-                    <img id="main_img" class="img-fluid img-thumbnail"
-                        src="{% static 'recipe_app/images/fukusai.webp' %}" alt="簡単小松菜えのき醤油和え">
-                    <button id="favorite-button" class="svg-overlay">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-star" viewBox="0 0 16 16">
-                            <path
-                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                        </svg>
-                    </button>
-                    <p class="image-label">簡単小松菜えのき醤油和え</p>
-                </div>
-            </div>
-            <div class="mx-auto mt-3 d-flex justify-content-around">
-                <div class="image-container mx-1">
-                    <img id="main_img" class="img-fluid img-thumbnail"
-                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
-                    <button id="favorite-button" class="svg-overlay">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-star" viewBox="0 0 16 16">
-                            <path
-                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                        </svg>
-                    </button>
-                    <p class="image-label">きのことおかかの汁物</p>
-                </div>
-                <div class="image-container mx-1">
-                    <img id="main_img" class="img-fluid img-thumbnail"
-                        src="{% static 'recipe_app/images/shirumono.webp' %}" alt="きのことおかかの汁物">
-                    <button id="favorite-button" class="svg-overlay">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-star" viewBox="0 0 16 16">
-                            <path
-                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                        </svg>
-                    </button>
-                    <p class="image-label">きのことおかかの汁物</p>
-                </div>
-            </div>
+    <div class="tab-content text-center img-max-height-80vh" id="myTabContent">
+
+        <!-- レシピ一覧：主菜 -->
+        <div class="tab-pane fade in active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+            <div id="tab1-items-container"></div>
             <!-- ページネーション -->
-            {% include "recipe_app/pagination.html" %}
+            <nav>
+                <ul class="pagination" id="tab1-pagination">
+                    <li class="page-item"><a class="page-link" href="#" data-page="prev">&lt;</a></li>
+                    <!-- Page numbers will be injected here -->
+                    <li class="page-item"><a class="page-link" href="#" data-page="next">&gt;</a></li>
+                </ul>
+            </nav>
         </div>
 
-        <!-- 副菜 -->
-        <div id="recipe_list_2" class="tab-pane fade">
-            <h3>recipe_list_ 3</h3>
-            <p>メニ4ー2</p>
+        <!-- レシピ一覧：副菜 -->
+        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+            <div id="tab2-items-container"></div>
             <!-- ページネーション -->
-            {% include "recipe_app/pagination.html" %}
+            <nav>
+                <ul class="pagination" id="tab2-pagination">
+                    <li class="page-item"><a class="page-link" href="#" data-page="prev">&lt;</a></li>
+                    <!-- Page numbers will be injected here -->
+                    <li class="page-item"><a class="page-link" href="#" data-page="next">&gt;</a></li>
+                </ul>
+            </nav>
         </div>
 
-        <!-- 汁物 -->
-        <div id="recipe_list_3" class="tab-pane fade">
-            <h3>recipe_list_ 3</h3>
-            <p>メニュー3</p>
+        <!-- レシピ一覧：汁物 -->
+        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+            <div id="tab3-items-container"></div>
             <!-- ページネーション -->
-            {% include "recipe_app/pagination.html" %}
+            <nav>
+                <ul class="pagination" id="tab3-pagination">
+                    <li class="page-item"><a class="page-link" href="#" data-page="prev">&lt;</a></li>
+                    <!-- Page numbers will be injected here -->
+                    <li class="page-item"><a class="page-link" href="#" data-page="next">&gt;</a></li>
+                </ul>
+            </nav>
         </div>
 
-        <!-- デザート -->
-        <div id="recipe_list_4" class="tab-pane fade">
-            <h3>recipe_list_ 4</h3>
-            <p>メニュー4</p>
+        <!-- レシピ一覧：デザート -->
+        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+            <div id="tab4-items-container"></div>
             <!-- ページネーション -->
-            {% include "recipe_app/pagination.html" %}
+            <nav>
+                <ul class="pagination" id="tab4-pagination">
+                    <li class="page-item"><a class="page-link" href="#" data-page="prev">&lt;</a></li>
+                    <!-- Page numbers will be injected here -->
+                    <li class="page-item"><a class="page-link" href="#" data-page="next">&gt;</a></li>
+                </ul>
+            </nav>
         </div>
     </div>
 
@@ -134,8 +89,124 @@
         </a>
     </div>
 
+    <!-- ↓ここからスクリプト -------------------------------------------------->
+
     <!-- お気に入りボタン制御 -->
     <script src="{% static 'recipe_app/js/favorite.js' %}"></script>
+
+    <script type="text/javascript">
+        const staticUrl = "{% static 'recipe_app/' %}";
+    </script>
+
+    <!-- タブとページネーションを制御 -->
+    <script>
+        // ドキュメントが読み込まれた後に実行
+        $(document).ready(function() {
+
+            // コンテンツを非同期で読み込む関数
+            function loadItems(tab, pageNumber) {
+                $.ajax({
+                    url: '{% url "paginate_view" %}',
+                    data: { page: pageNumber, tab: tab },
+                    success: function(data) {
+                        const itemsContainer = $(`#${tab}-items-container`);
+                        const paginationList = $(`#${tab}-pagination`);
+                        const itemCount = data.items.length;
+                        let htmlContent = ``;
+                        let item4 = ``;
+                        
+                        // コンテンツを初期化
+                        itemsContainer.empty();
+
+                        // コンテンツを繰り返し追加
+                        data.items.forEach((item, index) => {
+                            let item1 = ``;
+                            let item2 = ``;
+                            let item3 = ``;
+
+                            // 奇数個目のレシピの頭にはdivを追加
+                            if (index % 2 === 0) {
+                                item1 = `<div class="mx-auto mt-3 d-flex justify-content-around">`;
+                            }
+
+                            item2 = `
+                                <div class="image-container mx-1">
+                                    <img id="main_img" class="img-fluid img-thumbnail" src="${staticUrl}${item.img}" alt="${item.name}">
+                                    <button id="favorite-button" class="svg-overlay mt-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star"
+                                            viewBox="0 0 16 16">
+                                            <path
+                                                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                                        </svg>
+                                    </button>
+                                    <p class="image-label">${item.name}</p>
+                                </div>
+                            `;
+
+                            // 偶数個目のレシピには</div>を追加
+                            if (index % 2 === 1) {
+                                item3 = `</div>`;
+                            }
+
+                            htmlContent = htmlContent + item1 + item2 + item3;
+                        });
+
+                        // リスト数が奇数ならば</div>を追加
+                        if (data.items.length % 2 === 1) {
+                            item4 = `</div>`;
+                        }
+
+                        htmlContent = htmlContent + item4;
+                        itemsContainer.append(htmlContent);
+
+                        // ページネーションリンクを更新
+                        paginationList.find('.page-item:not(:first):not(:last)').remove();
+
+                        for (let i = 1; i <= data.num_pages; i++) {
+                            paginationList.find('li:last').before(
+                                `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`
+                            );
+                        }
+
+                        paginationList.find('.page-item').removeClass('active');
+                        paginationList.find(`a[data-page="${pageNumber}"]`).parent().addClass('active');
+                        
+                        paginationList.find('a[data-page="prev"]').toggleClass('disabled', !data.has_previous);
+                        paginationList.find('a[data-page="next"]').toggleClass('disabled', !data.has_next);
+                    }
+                });
+            }
+
+            // コンテンツを初期化
+            loadItems('tab1', 1);
+
+            // タブクリック時のアクション
+            $('#myTab a').on('click', function(e) {
+                e.preventDefault();
+                const tab = $(this).data('tab');
+                $('.tab-pane').removeClass('in active');
+                $(`#${tab}`).addClass('in active');
+
+                // Load items for the selected tab
+                loadItems(tab, 1);
+            });
+
+            // ページクリック時のアクション
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+                const tab = $('.tab-pane.in').attr('id');
+                const page = $(this).data('page');
+                if (page === 'prev' || page === 'next') {
+                    const currentPage = $(`#${tab}-pagination .page-item.active a`).data('page');
+                    const newPage = page === 'prev' ? (currentPage - 1) : (currentPage + 1);
+                    loadItems(tab, newPage);
+                } else {
+                    loadItems(tab, page);
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>
