@@ -11,4 +11,6 @@ urlpatterns = [
     path("recipe_detail/", recipe_detail, name="recipe_detail"),
     path("recipe_detail/", recipe_detail, name="recipe_detail"),
     path('paginate/', paginate_view, name='paginate_view'),
+    path('add_favorite/', add_favorite, name='add_favorite'),
+    path('delete_favorite/', delete_favorite, name='delete_favorite'),
 ]

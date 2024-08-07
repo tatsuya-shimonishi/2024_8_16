@@ -23,15 +23,32 @@ COOKING_CATEGORY_LIST   = {
     "soup"  : COOKING_CATEGORY_SOUP,
     "desert": COOKING_CATEGORY_DESERT,
 }
+RECIPE_GET_COUNT = 30
 
 """ DBよりレシピの取得 """
-def get_recipe(params, get_count=30):
+def get_recipe(request, params, get_count=RECIPE_GET_COUNT):
+    user = request.user
+    
     # 各レシピを取得（主菜、副菜、汁物、デザート）
     for key, value in COOKING_CATEGORY_LIST.items():
-        cooking_category = CookingCategory.objects.get(name=value)
+        records = []
+        recipe_list = []
+        
         # 料理区分を指定してレシピ一覧を取得
+        cooking_category = CookingCategory.objects.get(name=value)
         records = list(Recipe.objects.filter(cooking_category=cooking_category)[:get_count])
-        params[key] = records
+        
+        # お気に入り登録されているかの判定を追加
+        for record in records:
+            is_favorite = Favorite.objects.filter(custom_user=user, recipe=record).exists()
+            recipe_list.append({
+                "recipe": record,
+                "is_favorite": is_favorite
+            })
+            
+        params[key] = recipe_list
+    
+    print(params)
     
     return params
 
@@ -55,11 +72,11 @@ def index(request):
     #     sleep(1)
     
     # 各レシピのリストを取得（主菜、副菜、汁物、デザート）
-    records = get_recipe(params)
+    recipe_list = get_recipe(request, params)
     
     for key in COOKING_CATEGORY_LIST.keys():
         # レシピリストからランダムに1件抽出
-        record = random.choice(records[key])
+        record = random.choice(recipe_list[key])
         params[key] = record
     
     return render(request, 'recipe_app/index.html', params)
@@ -72,7 +89,7 @@ def recipe_list(request):
     }
     
     # DBよりレシピの取得
-    params = get_recipe(params)   
+    params = get_recipe(request, params)   
     
     return render(request, 'recipe_app/recipe_list.html', params)
 
@@ -114,8 +131,7 @@ class SignupView(CreateView):
         response = super().form_valid(form)
         return response
 
-
-
+""" ページネーション取得（非同期通信） """
 def paginate_view(request):
     page_number = request.GET.get('page', 1)
     tab = request.GET.get('tab', 'default')  
@@ -150,16 +166,64 @@ def paginate_view(request):
 
     return JsonResponse(data)
 
-
-
-""" DBよりレシピの取得 """
-def get_recipe(params, get_count=30):
-    # 各レシピを取得（主菜、副菜、汁物、デザート）
-    for key, value in COOKING_CATEGORY_LIST.items():
-        cooking_category = CookingCategory.objects.get(name=value)
-        # 料理区分を指定してレシピ一覧を取得
-        records = list(Recipe.objects.filter(cooking_category=cooking_category)[:get_count])
-        params[key] = records
+""" お気に入り：追加 """
+@login_required
+def add_favorite(request):
+    response_data = {
+        "process": "add NG...",
+        'custom_user': "",
+        'recipe': "",
+    }
     
-    return params
+    if request.method == 'POST':
+        user_id = request.user.id
+        item_id = request.POST.get('item_id')
+        
+        custom_user_name_obj = CustomUser.objects.get(id=user_id)
+        recipe_obj = Recipe.objects.get(id=item_id)
+        
+        Favorite.objects.update_or_create(
+            custom_user = custom_user_name_obj,
+            recipe = recipe_obj,
+            defaults = {
+                'custom_user': custom_user_name_obj,
+                'recipe': recipe_obj,
+            }
+        )
+        
+        response_data = {
+            "process": "add",
+            'custom_user': custom_user_name_obj.username,
+            'recipe': recipe_obj.name,
+        }
+        
+    return JsonResponse(response_data)
 
+""" お気に入り：削除 """
+@login_required
+def delete_favorite(request):
+    response_data = {
+        "process": "delete NG...",
+        'custom_user': "",
+        'recipe': "",
+    }
+    
+    if request.method == 'POST':
+        user_id = request.user.id
+        item_id = request.POST.get('item_id')
+        
+        custom_user_name_obj = CustomUser.objects.get(id=user_id)
+        recipe_obj = Recipe.objects.get(id=item_id)
+        
+        Favorite.objects.filter(
+            custom_user = custom_user_name_obj,
+            recipe = recipe_obj,
+        ).delete()
+        
+        response_data = {
+            "process": "delete",
+            'custom_user': custom_user_name_obj.username,
+            'recipe': recipe_obj.name,
+        }
+   
+    return JsonResponse(response_data)
