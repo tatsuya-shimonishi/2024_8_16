@@ -1,3 +1,4 @@
+from pprint import pprint
 import random
 from time import sleep
 from django.http import JsonResponse
@@ -48,8 +49,6 @@ def get_recipe(request, params, get_count=RECIPE_GET_COUNT):
             
         params[key] = recipe_list
     
-    print(params)
-    
     return params
 
 """ ホーム """
@@ -89,16 +88,35 @@ def recipe_list(request):
     }
     
     # DBよりレシピの取得
-    params = get_recipe(request, params)   
+    params = get_recipe(request, params)
     
     return render(request, 'recipe_app/recipe_list.html', params)
 
 """ 作り方 """
 @login_required
-def recipe_detail(request):
+def recipe_detail(request, recipe_id):
     params = {
         'title': '作り方'
-    }    
+    }
+
+    # DBよりレシピの取得
+    recipe_obj = Recipe.objects.get(id=recipe_id)
+    # 材料を取得
+    ingredients_obj = recipe_obj.ingredients_set.all()
+    # 作り方を取得
+    instruction_obj = recipe_obj.instruction_set.all()
+
+    # お気に入り登録されているか
+    user = request.user
+    is_favorite = Favorite.objects.filter(custom_user=user, recipe=recipe_obj).exists()
+    
+    params = {
+        'recipe': recipe_obj,
+        'ingredients': ingredients_obj,
+        'instruction': instruction_obj,
+        'is_favorite': is_favorite,
+    }
+    
     return render(request, 'recipe_app/recipe_detail.html', params)
 
 """ ログイン """

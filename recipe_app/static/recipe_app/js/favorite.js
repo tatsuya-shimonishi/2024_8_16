@@ -9,9 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // クリックイベント
     document.addEventListener('click', function (event) {
-        // フォームなどのデフォルトクリックで起動しないように設定
-        // event.preventDefault();
-
         // starクラスの親svgタグを取得
         const svg = event.target.closest('.star');
 
@@ -19,16 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const frameStar = svg.querySelector('#frame-star');
             const fillStar = svg.querySelector('#fill-star');
             const item_id = frameStar.getAttribute('data-item-id');
+            const item_favorite = frameStar.getAttribute('data-item-favorite');
             const data = new URLSearchParams({
                 "item_id": item_id
             });
             let url = "";
 
+            // 文字列が "True" または "true" の場合に boolean true に変換
+            let booleanValue = (item_favorite.toLowerCase() === 'true');
+
             // 各お気に入りボタンの切り替え
             if (item_id in isFavorite) {
                 isFavorite[item_id] = !isFavorite[item_id];
             } else {
-                isFavorite[item_id] = true
+                if (booleanValue) {
+                    isFavorite[item_id] = false
+                } else {
+                    isFavorite[item_id] = true
+                }
             }
 
             // お気に入り登録

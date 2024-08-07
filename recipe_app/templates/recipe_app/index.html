@@ -13,31 +13,39 @@
     <!-- 主菜 -->
     <div class="mx-auto text-cente img-max-height-50vh">
         <div class="image-container mt-1">
-            <img class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ main.recipe.img }}" alt="{{ main.recipe.name }}">
-            {% include "recipe_app/favorite_button.html" with item_id=main.recipe.id is_favorite=main.is_favorite %}
-            <p class="image-label">主菜：{{ main.recipe.name }}</p>
+            <a href="{% url 'recipe_detail' recipe_id=main.recipe.id %}">
+                <img class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ main.recipe.img }}" alt="{{ main.recipe.name }}">
+                <p class="image-label">主菜：{{ main.recipe.name }}</p>
+            </a>
+                {% include "recipe_app/favorite_button.html" with item_id=main.recipe.id is_favorite=main.is_favorite %}
         </div>
     </div>
 
     <!-- 副菜、汁物、デザート -->
     <div class="mx-auto mt-3 d-flex justify-content-cente img-max-height-80vh">
         <div class="image-container mx-1">
-            <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ sub.recipe.img }}"
-                alt="{{ sub.recipe.name }}">
+            <a href="{% url 'recipe_detail' recipe_id=sub.recipe.id %}">
+                <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ sub.recipe.img }}"
+                    alt="{{ sub.recipe.name }}">
+                <p class="image-label">副菜：{{ sub.recipe.name }}</p>
+            </a>
             {% include "recipe_app/favorite_button.html" with item_id=sub.recipe.id is_favorite=sub.is_favorite %}
-            <p class="image-label">副菜：{{ sub.recipe.name }}</p>
         </div>
         <div class="image-container mx-1">
-            <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ soup.recipe.img }}"
-                alt="{{ soup.recipe.name }}">
+            <a href="{% url 'recipe_detail' recipe_id=soup.recipe.id %}">
+                <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ soup.recipe.img }}"
+                    alt="{{ soup.recipe.name }}">
+                <p class="image-label">汁物：{{ soup.recipe.name }}</p>
+            </a>
             {% include "recipe_app/favorite_button.html" with item_id=soup.recipe.id is_favorite=soup.is_favorite %}
-            <p class="image-label">汁物：{{ soup.recipe.name }}</p>
         </div>
         <div class="image-container mx-1">
-            <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ desert.recipe.img }}"
-                alt="{{ desert.recipe.name }}">
+            <a href="{% url 'recipe_detail' recipe_id=desert.recipe.id %}">
+                <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ desert.recipe.img }}"
+                    alt="{{ desert.recipe.name }}">
+                <p class="image-label">デザート：{{ desert.recipe.name }}</p>
+            </a>
             {% include "recipe_app/favorite_button.html" with item_id=desert.recipe.id is_favorite=desert.is_favorite %}
-            <p class="image-label">デザート：{{ desert.recipe.name }}</p>
         </div>
     </div>
 
