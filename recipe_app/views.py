@@ -136,6 +136,8 @@ def paginate_view(request):
     page_number = request.GET.get('page', 1)
     tab = request.GET.get('tab', 'default')  
     items_per_page = 6 
+    user = request.user
+    recipe_list = []
     
     # タブに応じたクエリセットを生成
     if tab == 'tab1':
@@ -149,14 +151,23 @@ def paginate_view(request):
     
     # 料理区分を条件にレシピレコードを取得
     cooking_category = CookingCategory.objects.get(name=category_name)
-    queryset = Recipe.objects.filter(cooking_category=cooking_category)
-
+    records = Recipe.objects.filter(cooking_category=cooking_category)
+    
     # ページネーターオブジェクトを取得
-    paginator = Paginator(queryset, items_per_page)
+    paginator = Paginator(records, items_per_page)
     page = paginator.get_page(page_number)
+    records = list(page.object_list.values())
+    
+    # お気に入り登録されているかの判定を追加
+    for record in records:
+        is_favorite = Favorite.objects.filter(custom_user=user, recipe_id=record["id"]).exists()
+        recipe_list.append({
+            "recipe": record,
+            "is_favorite": is_favorite
+        })
 
     data = {
-        'items': list(page.object_list.values()),
+        'items': recipe_list,
         'has_next': page.has_next(),
         'has_previous': page.has_previous(),
         'next_page_number': page.next_page_number() if page.has_next() else None,
