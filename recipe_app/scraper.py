@@ -1,28 +1,34 @@
-from time import sleep
 import requests
-from bs4 import BeautifulSoup
 import os
+import numpy as np
+from time import sleep
+from bs4 import BeautifulSoup
 from recipe_app.models import *
 from django.core.files.base import ContentFile
-from django.db.models import Q
+from .models import *
+from .constant import *
 
-""" レシピ一覧を取得 """
-def get_recipe_list(search_word, cooking_category):
+""" レシピのURL一覧を取得 """
+def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
     
     recipes = []
     search_query = search_word + " " + cooking_category
+    range_max = (recipe_get_count % 11) + 2
     
-    for i in range(1, 4):
+    for i in range(1, range_max):
         base_url = 'https://cookpad.com/search/'
         page = ""
+        
         # 2ページ以降はURLにページ数のパラメータを設定
         if i > 1:
             page = f"?page={i}"
         search_url = base_url + requests.utils.quote(search_query) + page
+        
+        # 検索結果ページをスクレイピング
         response = requests.get(search_url)
         
         if response.status_code != 200:
-            return {'error': 'Failed to retrieve page'}
+            return False
         
         soup = BeautifulSoup(response.text, 'html.parser')
         
@@ -36,7 +42,7 @@ def get_recipe_list(search_word, cooking_category):
             })
             
             # スクレイピングを1秒待つ
-            sleep(1)
+            sleep(SCRAPING_SLEEP)
         
     return recipes
 
@@ -58,19 +64,20 @@ def save_image(img_url, model_obj):
 
 
 """ レシピ詳細を取得 """
-def get_recipe_detail(recipe_detail_url, cooking_category):
+def get_recipe_detail(recipe_detail_url, cooking_category_obj):
     base_url = 'https://cookpad.com'
     request_url = base_url + recipe_detail_url
     response = requests.get(request_url)
         
     if response.status_code != 200:
-        return {'error': 'Failed to retrieve page'}
+        return False
     
     soup = BeautifulSoup(response.text, 'html.parser')
     
     # 作成者名管理 ---------------------------------
     # 作者名取得
     recipe_author_name = soup.select_one('#recipe_author_name').get_text(strip=True)
+    
     # 更新or登録
     Author.objects.update_or_create(
         name = recipe_author_name,  # チェックする条件
@@ -80,23 +87,14 @@ def get_recipe_detail(recipe_detail_url, cooking_category):
     # レシピ管理 -----------------------------------
     # レシピ名
     title =  soup.select_one(".recipe-title").get_text(strip=True)
-    
-    # レシピURL
-    request_url
-    
-    # 料理区分（主菜、副菜、汁物、デザート）
-    cooking_category_obj = CookingCategory.objects.get(name=cooking_category)
-    
     # 作成者ID
     author_obj = Author.objects.get(name = recipe_author_name)
-    
     # 食数
     servings = ""
     ingredients_tmp = soup.select_one('#ingredients')
     data = ingredients_tmp.select_one(".servings_for")
     if data:
         servings = data.get_text(strip=True)
-    
     # メモ
     memo_tmp = soup.select_one('#memo_wrapper')
     memo = memo_tmp.select_one('.text_content').get_text(strip=True)
@@ -201,4 +199,52 @@ def get_recipe_detail(recipe_detail_url, cooking_category):
         if img_url:
             # 画像を保存
             save_image(img_url['src'], instruction_object)
+            
+    return recipe_object
 
+
+""" 検索ワードを取得 """
+def get_liking_search_word(request, cooking_category_obj):
+    ingredients_weight = {}
+    search_word = ""
+    user_obj = request.user
+    
+    # お気に入りリストを取得
+    favorite_list = Favorite.objects.filter(custom_user=user_obj, recipe__cooking_category=cooking_category_obj)
+    
+    if favorite_list:
+        for record in favorite_list:
+            # レシピの食材リストを取得
+            ingredient_list = Ingredients.objects.filter(recipe=record.recipe).exclude(amount=None)
+            
+            # 食材ごとに重みづけ
+            for ingredient in ingredient_list:
+                name = ingredient.ingredientName.name
+                
+                if name not in ingredients_weight:
+                    ingredients_weight[name] = 0
+                    
+                ingredients_weight[name] += 1
+        
+        # 合計値より確率を計算し食材名を選択
+        total_weight = sum(ingredients_weight.values())
+        normalized_weights = [weight / total_weight for weight in ingredients_weight.values()]
+        items = list(ingredients_weight.keys())
+        search_word = np.random.choice(items, p=normalized_weights)
+        
+    return search_word
+    
+
+""" お気に入り削除 """
+def delete_favorite(request):
+    user_obj = request.user
+    
+    # ユーザーがお気に入りに登録していないレシピを取得
+    delete_recipes = Recipe.objects.exclude(id__in=Favorite.objects.filter(custom_user=user_obj).values_list('recipe_id', flat=True))
+    
+    print("ここから----------------------")
+    print(delete_recipes)
+    print("ここまで----------------------")
+    
+    # 削除操作を実行
+    # delete_recipes.delete()

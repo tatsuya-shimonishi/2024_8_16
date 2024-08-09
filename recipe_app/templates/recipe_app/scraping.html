@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    {% include "recipe_app/head.html" %}
+</head>
+
+<body class="container">
+    {% if result %}
+    <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% else %}
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+    {% endif %}
+    <hr>
+    {% for key, recipes in recipe_objects.items %}
+    <p>key : {{ key }}</p>
+    <p>recipes : {{ recipes }}</p>
+        {% for recipe in recipes.items %}
+        <p>{{ key }} : {{ recipe }}</p>
+        {% endfor %}
+    {% endfor %}
+</body>
+
+</html>

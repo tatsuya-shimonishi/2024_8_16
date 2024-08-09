@@ -1,4 +1,3 @@
-from pprint import pprint
 import random
 from time import sleep
 from django.http import JsonResponse
@@ -11,113 +10,24 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import *
 from .forms import *
+from .constant import *
 from .scraper import *
+from .get_recipe import get_recipe
 
-""" 定数 """
-COOKING_CATEGORY_MAIN   = "主菜"
-COOKING_CATEGORY_SUB    = "副菜"
-COOKING_CATEGORY_SOUP   = "汁物"
-COOKING_CATEGORY_DESERT = "デザート"
-COOKING_CATEGORY_LIST   = {
-    "main"  : COOKING_CATEGORY_MAIN,
-    "sub"   : COOKING_CATEGORY_SUB,
-    "soup"  : COOKING_CATEGORY_SOUP,
-    "desert": COOKING_CATEGORY_DESERT,
-}
-RECIPE_GET_COUNT = 30
 
-""" DBよりレシピの取得 """
-def get_recipe(request, params, get_count=RECIPE_GET_COUNT):
-    user = request.user
-    
-    # 各レシピを取得（主菜、副菜、汁物、デザート）
-    for key, value in COOKING_CATEGORY_LIST.items():
-        records = []
-        recipe_list = []
-        
-        # 料理区分を指定してレシピ一覧を取得
-        cooking_category = CookingCategory.objects.get(name=value)
-        records = list(Recipe.objects.filter(cooking_category=cooking_category)[:get_count])
-        
-        # お気に入り登録されているかの判定を追加
-        for record in records:
-            is_favorite = Favorite.objects.filter(custom_user=user, recipe=record).exists()
-            recipe_list.append({
-                "recipe": record,
-                "is_favorite": is_favorite
-            })
-            
-        params[key] = recipe_list
-    
-    return params
+""" 新規登録 """
+class SignupView(CreateView):
+    form_class = SignUpForm
+    template_name = "recipe_app/signup.html" 
+    # ユーザー登録後のリダイレクト先ページ
+    success_url = reverse_lazy("login")
 
-""" ホーム """
-@login_required
-def index(request):
-    params = {
-        'title': 'ホーム'
-    }
-    
-    """ レシピのスクレイピング """
-    # search_word=""
-    # cooking_category_word = "主菜"
-    # get_data_count = 10
-    # cooking_category = CookingCategory.objects.get(name=cooking_category_word).name
-    # recipe_detail_url = get_recipe_list(search_word, cooking_category)
-    # i = 0
-    # for i in range(get_data_count):
-    #     get_recipe_detail(recipe_detail_url[i]["recipe_detail_url"], cooking_category)
-    #     # スクレイピングを1秒待つ
-    #     sleep(1)
-    
-    # 各レシピのリストを取得（主菜、副菜、汁物、デザート）
-    recipe_list = get_recipe(request, params)
-    
-    for key in COOKING_CATEGORY_LIST.keys():
-        # レシピリストからランダムに1件抽出
-        record = random.choice(recipe_list[key])
-        params[key] = record
-    
-    return render(request, 'recipe_app/index.html', params)
+    # フォームが正常に検証された場合
+    def form_valid(self, form):
+        # フォームへの入力内容を保存
+        response = super().form_valid(form)
+        return response
 
-""" レシピ一覧 """
-@login_required
-def recipe_list(request):
-    params = {
-        'title': 'レシピ一覧'
-    }
-    
-    # DBよりレシピの取得
-    params = get_recipe(request, params)
-    
-    return render(request, 'recipe_app/recipe_list.html', params)
-
-""" 作り方 """
-@login_required
-def recipe_detail(request, recipe_id):
-    params = {
-        'title': '作り方'
-    }
-
-    # DBよりレシピの取得
-    recipe_obj = Recipe.objects.get(id=recipe_id)
-    # 材料を取得
-    ingredients_obj = recipe_obj.ingredients_set.all()
-    # 作り方を取得
-    instruction_obj = recipe_obj.instruction_set.all()
-
-    # お気に入り登録されているか
-    user = request.user
-    is_favorite = Favorite.objects.filter(custom_user=user, recipe=recipe_obj).exists()
-    
-    params = {
-        'recipe': recipe_obj,
-        'ingredients': ingredients_obj,
-        'instruction': instruction_obj,
-        'is_favorite': is_favorite,
-    }
-    
-    return render(request, 'recipe_app/recipe_detail.html', params)
 
 """ ログイン """
 class CustomLoginView(LoginView):
@@ -136,21 +46,136 @@ class CustomLoginView(LoginView):
             login(self.request, user)
         return response
 
-""" 新規登録 """
-class SignupView(CreateView):
-    form_class = SignUpForm
-    template_name = "recipe_app/signup.html" 
-    # ユーザー登録後のリダイレクト先ページ
-    success_url = reverse_lazy("login")
 
-    # フォームが正常に検証された場合
-    def form_valid(self, form):
-        # フォームへの入力内容を保存
-        response = super().form_valid(form)
-        return response
+""" ホーム """
+@login_required
+def index(request):
+    params = {
+        'title': 'ホーム'
+    }
+    recipe_get_count = 1
+    
+    # 各レシピのリストを取得（主菜、副菜、汁物、デザート）
+    recipe_list = get_recipe(request, params, get_count=recipe_get_count)
+    
+    for key in COOKING_CATEGORY_LIST.keys():
+        # レシピリストからランダムに1件抽出
+        record = random.choice(recipe_list[key])
+        params[key] = record
+    
+    return render(request, 'recipe_app/index.html', params)
+
+
+""" レシピ一覧 """
+@login_required
+def recipe_list(request):
+    params = {
+        'title': 'レシピ一覧'
+    }
+    
+    return render(request, 'recipe_app/recipe_list.html', params)
+
+
+""" 作り方 """
+@login_required
+def recipe_detail(request, recipe_id):
+    params = {
+        'title': '作り方'
+    }
+
+    # DBよりレシピの取得
+    recipe_obj = Recipe.objects.get(id=recipe_id)
+    # 材料を取得
+    ingredients_obj = recipe_obj.ingredients_set.all()
+    # 作り方を取得
+    instruction_obj = recipe_obj.instruction_set.all()
+
+    # お気に入り登録されているか確認
+    user = request.user
+    is_favorite = Favorite.objects.filter(custom_user=user, recipe=recipe_obj).exists()
+    
+    add_params = {
+        'recipe': recipe_obj,
+        'ingredients': ingredients_obj,
+        'instruction': instruction_obj,
+        'is_favorite': is_favorite,
+    }
+    params.update(add_params)
+    
+    return render(request, 'recipe_app/recipe_detail.html', params)
+
+
+""" お気に入り：追加 """
+@login_required
+def add_favorite(request):
+    response_data = {
+        "process": "add NG...",
+        'custom_user': "",
+        'recipe': "",
+    }
+    
+    if request.method == 'POST':
+        user_id = request.user.id
+        item_id = request.POST.get('item_id')
+        
+        # ユーザーとレシピのオブジェクトを作成
+        custom_user_name_obj = CustomUser.objects.get(id=user_id)
+        recipe_obj = Recipe.objects.get(id=item_id)
+        
+        # お気に入り追加
+        Favorite.objects.update_or_create(
+            custom_user = custom_user_name_obj,
+            recipe = recipe_obj,
+            defaults = {
+                'custom_user': custom_user_name_obj,
+                'recipe': recipe_obj,
+            }
+        )
+        
+        response_data = {
+            "process": "add",
+            'custom_user': custom_user_name_obj.username,
+            'recipe': recipe_obj.name,
+        }
+        
+    return JsonResponse(response_data)
+
+
+""" お気に入り：削除 """
+@login_required
+def delete_favorite(request):
+    response_data = {
+        "process": "delete NG...",
+        'custom_user': "",
+        'recipe': "",
+    }
+    
+    if request.method == 'POST':
+        user_id = request.user.id
+        item_id = request.POST.get('item_id')
+        
+        # ユーザーとレシピのオブジェクトを作成
+        custom_user_name_obj = CustomUser.objects.get(id=user_id)
+        recipe_obj = Recipe.objects.get(id=item_id)
+        
+        # お気に入り削除
+        Favorite.objects.filter(
+            custom_user = custom_user_name_obj,
+            recipe = recipe_obj,
+        ).delete()
+        
+        response_data = {
+            "process": "delete",
+            'custom_user': custom_user_name_obj.username,
+            'recipe': recipe_obj.name,
+        }
+   
+    return JsonResponse(response_data)
+
 
 """ ページネーション取得（非同期通信） """
 def paginate_view(request):
+    get_count = 30
     page_number = request.GET.get('page', 1)
     tab = request.GET.get('tab', 'default')  
     items_per_page = 6 
@@ -169,7 +194,7 @@ def paginate_view(request):
     
     # 料理区分を条件にレシピレコードを取得
     cooking_category = CookingCategory.objects.get(name=category_name)
-    records = Recipe.objects.filter(cooking_category=cooking_category)
+    records = Recipe.objects.filter(cooking_category=cooking_category).order_by('?')[:get_count]
     
     # ページネーターオブジェクトを取得
     paginator = Paginator(records, items_per_page)
@@ -195,64 +220,64 @@ def paginate_view(request):
 
     return JsonResponse(data)
 
-""" お気に入り：追加 """
-@login_required
-def add_favorite(request):
-    response_data = {
-        "process": "add NG...",
-        'custom_user': "",
-        'recipe': "",
-    }
-    
-    if request.method == 'POST':
-        user_id = request.user.id
-        item_id = request.POST.get('item_id')
-        
-        custom_user_name_obj = CustomUser.objects.get(id=user_id)
-        recipe_obj = Recipe.objects.get(id=item_id)
-        
-        Favorite.objects.update_or_create(
-            custom_user = custom_user_name_obj,
-            recipe = recipe_obj,
-            defaults = {
-                'custom_user': custom_user_name_obj,
-                'recipe': recipe_obj,
-            }
-        )
-        
-        response_data = {
-            "process": "add",
-            'custom_user': custom_user_name_obj.username,
-            'recipe': recipe_obj.name,
-        }
-        
-    return JsonResponse(response_data)
 
-""" お気に入り：削除 """
+""" レシピデータのスクレイピング """
 @login_required
-def delete_favorite(request):
-    response_data = {
-        "process": "delete NG...",
-        'custom_user': "",
-        'recipe': "",
+def scraping(request):
+    params = {
+        "title": "レシピデータのスクレイピング",
     }
     
-    if request.method == 'POST':
-        user_id = request.user.id
-        item_id = request.POST.get('item_id')
+    try:
+        recipe_objects = {}
         
-        custom_user_name_obj = CustomUser.objects.get(id=user_id)
-        recipe_obj = Recipe.objects.get(id=item_id)
+        # お気に入り登録以外のレシピを削除
+        delete_favorite(request)
         
-        Favorite.objects.filter(
-            custom_user = custom_user_name_obj,
-            recipe = recipe_obj,
-        ).delete()
+        # 料理区分を全て取得
+        cooking_category_obj_list = CookingCategory.objects.all()
         
-        response_data = {
-            "process": "delete",
-            'custom_user': custom_user_name_obj.username,
-            'recipe': recipe_obj.name,
+        # 料理区分ごとにレシピを取得しDBへ登録
+        for cooking_category_obj in cooking_category_obj_list:
+            i = 0
+            cooking_category = cooking_category_obj.name
+            recipe_objects[cooking_category] = {}
+            
+            # お気に入り情報より検索ワードを取得
+            search_word = get_liking_search_word(request, cooking_category_obj)
+            
+            # 検索ワードと料理区分を指定してレシピのURLリストを取得
+            recipe_detail_url = get_recipe_url_list(search_word, cooking_category, SCRAPING_COUNT)
+            
+            if not recipe_detail_url:
+                continue
+        
+            # レシピデータを取得し各DBに登録
+            for i in range(SCRAPING_COUNT):
+                recipe_object = get_recipe_detail(recipe_detail_url[i]["recipe_detail_url"], cooking_category_obj)
+                
+                # 取得エラーはスキップ
+                if not recipe_object:
+                    continue
+                
+                recipe_objects[cooking_category][i] = {}
+                recipe_objects[cooking_category][i] = recipe_object
+                
+                # スクレイピングを1秒待つ
+                sleep(SCRAPING_SLEEP)
+                
+        tmp = {
+            "result": SUCCESS,
+            "message": "スクレイピング完了！",
+            "recipe_objects": recipe_objects,
         }
-   
-    return JsonResponse(response_data)
+        params.update(tmp)
+                
+    except Exception as e:
+        tmp = {
+            "result": FAILED,
+            "message": f"予期しないエラーが発生しました: {e}",
+        }
+        params.update(tmp)
+            
+    return render(request, 'recipe_app/scraping.html', params)

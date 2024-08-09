@@ -27,7 +27,7 @@ class Recipe(models.Model):
     servings = models.CharField(max_length=200, null=True, blank=True)
     memo = models.TextField(null=True, blank=True)
     def __str__(self):
-        return f"<Recipe> id:{self.id} name:{self.name}"
+        return f"【 id:{self.id} name:{self.name} 】"
 
 # お気に入り管理
 class Favorite(models.Model):

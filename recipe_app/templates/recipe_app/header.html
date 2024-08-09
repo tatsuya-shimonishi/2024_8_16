@@ -1,6 +1,6 @@
 <header class="bg-white sticky-top">    
     <div class="d-flex justify-content-between">
-        <h1><a href="{% url 'index' %}">Home</a></h1>
+        <h1><a href="{% url 'index' %}">{{ title }}</a></h1>
         <div class="align-content-end mb-3">
             <span>こんにちは {{ user.username }} さん</span>
             <a class="ms-4" href="{% url 'logout' %}">ログアウト</a>
