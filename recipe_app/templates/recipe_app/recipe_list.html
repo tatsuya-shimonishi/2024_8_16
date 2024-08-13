@@ -96,9 +96,11 @@
 
     <!-- ホームリンク -->
     <div class="mx-auto mt-3 text-center">
-        <a href="{% url 'index' %}">
-            <p class="border border-5 fs-3">ホームへ</p>
-        </a>
+        <div class="d-inline-block mt-3 container-fluid">
+            <a href="{% url 'index' %}">
+                <p class="border border-5 p-1 px-2">ホームへ</p>
+            </a>
+        </div>
     </div>
 
     <!-- ↓ここからスクリプト -------------------------------------------------->
@@ -151,7 +153,7 @@
                                 <div class="image-container mx-1">
                                     <a href="${detail_url}">
                                         <img id="main_img" class="img-fluid img-thumbnail" src="${staticUrl}${item.recipe.img}" alt="${item.recipe.name}">
-                                        <p class="image-label">${item.recipe.name}</p>
+                                        <p class="image-label bg-warning-subtle rounded fw-bold">${item.recipe.name}</p>
                                     </a>
                                     <button id="favorite-button" class="svg-overlay mt-2 star p-1 me-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="bi bi-star" stroke="goldenrod" fill="goldenrod" viewBox="0 0 16 16" id="frame-star" data-item-id="${item.recipe.id}" data-item-favorite="${item.is_favorite}" ${frame_star_hidden}>

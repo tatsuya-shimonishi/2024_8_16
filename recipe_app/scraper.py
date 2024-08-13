@@ -1,3 +1,4 @@
+import re
 import requests
 import os
 import numpy as np
@@ -12,7 +13,7 @@ from .constant import *
 def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
     
     recipes = []
-    search_query = search_word + " " + cooking_category
+    search_query = cooking_category + " " + search_word
     range_max = (recipe_get_count % 11) + 2
     
     for i in range(1, range_max):
@@ -22,14 +23,17 @@ def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
         # 2ページ以降はURLにページ数のパラメータを設定
         if i > 1:
             page = f"?page={i}"
+        
+        # 検索URLを作成
         search_url = base_url + requests.utils.quote(search_query) + page
         
         # 検索結果ページをスクレイピング
         response = requests.get(search_url)
         
         if response.status_code != 200:
-            return False
+            break
         
+        # 取得結果を解析
         soup = BeautifulSoup(response.text, 'html.parser')
         
         for item in soup.select('.recipe-preview'):
@@ -41,7 +45,7 @@ def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
                 'recipe_detail_url': url
             })
             
-            # スクレイピングを1秒待つ
+            # スクレイピングを待つ
             sleep(SCRAPING_SLEEP)
         
     return recipes
@@ -64,7 +68,7 @@ def save_image(img_url, model_obj):
 
 
 """ レシピ詳細を取得 """
-def get_recipe_detail(recipe_detail_url, cooking_category_obj):
+def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     base_url = 'https://cookpad.com'
     request_url = base_url + recipe_detail_url
     response = requests.get(request_url)
@@ -109,7 +113,7 @@ def get_recipe_detail(recipe_detail_url, cooking_category_obj):
             'author': author_obj,
             'servings': servings,
             'memo': memo,
-            }
+        }
     )
     
     # レシピ画像
@@ -167,7 +171,7 @@ def get_recipe_detail(recipe_detail_url, cooking_category_obj):
                 'ingredientName': ingredients_name_obj,
                 'amount': amount,
                 'order': count,
-                }
+            }
         )
         
     # 作り方管理 ---------------------------------------
@@ -190,7 +194,7 @@ def get_recipe_detail(recipe_detail_url, cooking_category_obj):
                 'recipe': recipe_obj,
                 'order': step_order,
                 'detail': step_text,
-                }
+            }
         )
         
         # 画像URLを取得
@@ -199,7 +203,21 @@ def get_recipe_detail(recipe_detail_url, cooking_category_obj):
         if img_url:
             # 画像を保存
             save_image(img_url['src'], instruction_object)
-            
+        
+    # お気に入り管理 ---------------------------------------
+    user_obj = request.user
+    
+    # お気に入り管理のレコードを登録(存在する場合は何もしない)
+    Favorite.objects.get_or_create(
+        custom_user=user_obj,
+        recipe=recipe_obj,
+        defaults = {
+            'custom_user': user_obj,
+            'recipe': recipe_obj,
+            'favorite_flg': False,
+        }
+    )
+
     return recipe_object
 
 
@@ -232,19 +250,25 @@ def get_liking_search_word(request, cooking_category_obj):
         items = list(ingredients_weight.keys())
         search_word = np.random.choice(items, p=normalized_weights)
         
-    return search_word
+        # 削除対象のパターンを設定
+        patterns = [
+            r'【.*?】', r'\(.*?\)', r'（.*?）', r'{.*?}', r'★', r'☆', r'✿', r'、.*', 
+            r'■', r'□', r'▪', r'◆', r'◇', r'〇', r'○', r'●', r'◎', r'・', r'※', 
+            ]
+        # パターンを | で連結して正規表現を作成
+        combined_pattern = '|'.join(patterns)
+        # キーワードの不要部分を削除
+        cleaned_word = re.sub(combined_pattern, '', search_word)
+        
+    return cleaned_word
     
 
-""" お気に入り削除 """
-def delete_favorite(request):
+""" お気に入りに登録していないレシピ削除 """
+def delete_not_favorite_recipe(request):
     user_obj = request.user
     
     # ユーザーがお気に入りに登録していないレシピを取得
-    delete_recipes = Recipe.objects.exclude(id__in=Favorite.objects.filter(custom_user=user_obj).values_list('recipe_id', flat=True))
-    
-    print("ここから----------------------")
-    print(delete_recipes)
-    print("ここまで----------------------")
+    delete_recipes = Recipe.objects.exclude(id__in=Favorite.objects.filter(custom_user=user_obj, favorite_flg=True).values_list('recipe_id', flat=True))
     
     # 削除操作を実行
-    # delete_recipes.delete()
+    delete_recipes.delete()

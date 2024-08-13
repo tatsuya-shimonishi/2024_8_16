@@ -8,57 +8,68 @@
 
 <body class="container">
     {% include "recipe_app/header.html" %}
-    <h1 class="border border-5">{{ recipe.name }}</h1>
-    <div class="mx-auto text-cente img-max-height-50vh">
-        <div class="image-container mt-1">
-            <img class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ recipe.img }}" alt="{{ recipe.name }}">
-            {% include "recipe_app/favorite_button.html" with item_id=recipe.id is_favorite=is_favorite %}
-        </div>
-    </div>
+    <h1 class="border border-5 p-3 mt-0 fs-1 fw-bold">{{ recipe.name }}</h1>
 
     <div class="row">
-        <!-- 材料 -->
-        <div class="text-start d-inline-block">
-            <p class="d-inline-block border border-5 my-1 p-1 px-2">材料 {{ recipe.servings }}</p>
-            <div class="border border-5 text-start pe-3">
-                <table class="m-1 mx-2 mb-2 col-12">
-                    {% for item in ingredients %}
-                    <tr class="border-bottom">
-                        <td>{{ item.ingredientName.name }}</td>
-                        <td class="text-end">{{ item.amount }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+        <div class="col-md">
+            <!-- メイン画像 -->
+            <div class="mx-auto text-cente img-max-height-50vh">
+                <div class="image-container mt-1">
+                    <img class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ recipe.img }}" alt="{{ recipe.name }}">
+                    {% include "recipe_app/favorite_button.html" with item_id=recipe.id is_favorite=is_favorite %}
+                </div>
             </div>
         </div>
-        <!-- 作り方 -->
-        <div class="text-start d-inline-block mt-3">
-            <p class="d-inline-block border border-5 my-1 p-1 px-2">
-                作り方
-            </p>
-            <div class="border border-5 text-start">
-                <ol class="lh-lg my-2">
-                    {% for item in instruction %}
-                    <li>{{ item.detail }}</li>
-                    {% endfor %}
-                </ol>
+        <div class="col-md">
+            <!-- 材料 -->
+            <div class="text-start d-inline-block container-fluid">
+                <p class="d-inline-block border border-5 my-1 p-1 px-2">材料 {{ recipe.servings }}</p>
+                <div class="border border-5 text-start pe-5 ps-4 pt-3 pb-4 lh-lg">
+                    <table class="m-1 mx-2 mb-2 col-12">
+                        {% for item in ingredients %}
+                        <tr class="border-bottom">
+                            <td>{{ item.ingredientName.name }}</td>
+                            <td class="text-end">{{ item.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
             </div>
         </div>
-        <!-- memo -->
-        <div class="text-start d-inline-block mt-3">
-            <p class="d-inline-block border border-5 my-1 p-1 px-2">メモ</p>
-            <p class="border border-5 p-1 px-2">{{ recipe.memo }}</p>
+        <div>
+            <!-- 作り方 -->
+            <div class="text-start d-inline-block mt-3 container-fluid">
+                <p class="d-inline-block border border-5 my-1 p-1 px-2">
+                    作り方
+                </p>
+                <div class="border border-5 text-start">
+                    <ol class="lh-lg my-2 ps-5 pe-3">
+                        {% for item in instruction %}
+                        <li>{{ item.detail }}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+            <!-- memo -->
+            <div class="text-start d-inline-block mt-3 container-fluid">
+                <p class="d-inline-block border border-5 my-1 p-1 px-2">メモ</p>
+                <p class="border border-5 p-3">{{ recipe.memo }}</p>
+            </div>
         </div>
-    </div>
-
-    <!-- リンク -->
-    <div class="mx-auto mt-3 text-center">
-        <a href="{% url 'index' %}">
-            <p class="border border-5 fs-5">ホームへ</p>
-        </a>
-        <a href="{% url 'recipe_list' %}">
-            <p class="border border-5 fs-5">レシピ一覧へ</p>
-        </a>
+        
+        <!-- リンク -->
+        <div class="mx-auto mt-3 text-center">
+            <div class="d-inline-block mt-3 container-fluid">
+                <a href="{% url 'index' %}">
+                    <p class="border border-5 p-1 px-2">ホームへ</p>
+                </a>
+            </div>
+            <div class="d-inline-block container-fluid">
+                <a href="{% url 'recipe_list' %}">
+                    <p class="border border-5 p-1 px-2">レシピ一覧へ</p>
+                </a>
+            </div>
+        </div>
     </div>
 
 </body>

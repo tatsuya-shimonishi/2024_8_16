@@ -16,7 +16,7 @@ def get_recipe(request, params, get_count):
         
         # お気に入り登録されているかの判定を追加
         for record in records:
-            is_favorite = Favorite.objects.filter(custom_user=user, recipe=record).exists()
+            is_favorite = Favorite.objects.filter(custom_user=user, recipe=record, favorite_flg=True).exists()
             recipe_list.append({
                 "recipe": record,
                 "is_favorite": is_favorite

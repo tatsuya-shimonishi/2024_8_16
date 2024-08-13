@@ -7,19 +7,46 @@
 </head>
 
 <body class="container">
-    {% if result %}
-    <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% include "recipe_app/header.html" %}
+    {% if initial_display %}
+        <h2>スクレイピングを実行しますか？</h2>
+        <p>※10分ほど時間がかかります</p>
+        <p>
+            <form action="{% url 'scraping' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="実行">
+            </form>
+        </p>
+        <p><a href="{% url 'index' %}">ホームへ</a></p>
     {% else %}
-    <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% if result %}
+            <div class="alert alert-success mt-3" role="alert">{{ message }}</div>
+            <h4>検索ワード</h4>
+            <ul>
+                {% for key, value in search_words.items %}
+                <li>{{ key }}：{{ value }}</li>
+                {% endfor %}
+            </ul>
+            <table class="table">
+                <thead>
+                    <tr><th>料理区分</th><th>ID</th><th>レシピ名</th></tr>
+                </thead>
+                {% for key, recipes in recipe_data.items %}
+                {% for id, recipe in recipes.items %}
+                <tr><td>{{ key }}</td><td>{{ id }}</td><td>{{ recipe }}</td></tr>
+                
+                {% endfor %}
+                {% endfor %}
+            </table>
+        {% else %}
+            <div class="alert alert-danger text-start" role="alert">
+                <h3>{{ message }}</h3>
+                <p>{{ type }}</p>
+                <p>{{ detail }}</p>
+            </div>
+        {% endif %}
+        <p><a href="{% url 'index' %}">ホームへ</a></p>
     {% endif %}
-    <hr>
-    {% for key, recipes in recipe_objects.items %}
-    <p>key : {{ key }}</p>
-    <p>recipes : {{ recipes }}</p>
-        {% for recipe in recipes.items %}
-        <p>{{ key }} : {{ recipe }}</p>
-        {% endfor %}
-    {% endfor %}
 </body>
 
 </html>

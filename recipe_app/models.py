@@ -33,6 +33,10 @@ class Recipe(models.Model):
 class Favorite(models.Model):
     custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    favorite_flg = models.BooleanField(default=False)
+    class Meta:
+        # ユーザーとレシピで複合キー
+        unique_together = (('custom_user', 'recipe'),)
     def __str__(self):
         return f"<Favorite> custom_user:{self.custom_user} recipe:{self.recipe.name}"
 
