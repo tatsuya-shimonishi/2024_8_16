@@ -22,7 +22,9 @@
     </div>
 
     <!-- 副菜、汁物、デザート -->
+    {% if sub or soup or desert %}
     <div class="mx-auto mt-3 d-md-flex justify-content-cente img-max-height-80vh">
+        {% if sub %}
         <div class="image-container mx-1">
             <a href="{% url 'recipe_detail' recipe_id=sub.recipe.id %}">
                 <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ sub.recipe.img }}"
@@ -31,6 +33,8 @@
             </a>
             {% include "recipe_app/favorite_button.html" with item_id=sub.recipe.id is_favorite=sub.is_favorite %}
         </div>
+        {% endif %}
+        {% if soup %}
         <div class="image-container mx-1">
             <a href="{% url 'recipe_detail' recipe_id=soup.recipe.id %}">
                 <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ soup.recipe.img }}"
@@ -39,6 +43,8 @@
             </a>
             {% include "recipe_app/favorite_button.html" with item_id=soup.recipe.id is_favorite=soup.is_favorite %}
         </div>
+        {% endif %}
+        {% if desert %}
         <div class="image-container mx-1">
             <a href="{% url 'recipe_detail' recipe_id=desert.recipe.id %}">
                 <img id="main_img" class="img-fluid img-thumbnail" src="{% static 'recipe_app/' %}{{ desert.recipe.img }}"
@@ -47,7 +53,9 @@
             </a>
             {% include "recipe_app/favorite_button.html" with item_id=desert.recipe.id is_favorite=desert.is_favorite %}
         </div>
+        {% endif %}
     </div>
+    {% endif %}
 
     <!-- レシピ一覧 -->
     <div class="mx-auto mt-3 text-center">

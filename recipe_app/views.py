@@ -60,6 +60,10 @@ def index(request):
     recipe_list = get_recipe(request, params, get_count=recipe_get_count)
     
     for key in COOKING_CATEGORY_LIST.keys():
+        # レシピが存在しない場合はスキップ
+        if key not in recipe_list:
+            continue
+        
         # レシピリストからランダムに1件抽出
         record = random.choice(recipe_list[key])
         params[key] = record
@@ -138,10 +142,8 @@ def delete_favorite(request):
 
 """ ページネーション取得（非同期通信） """
 def paginate_view(request):
-    get_count = 30
     page_number = request.GET.get('page', 1)
     tab = request.GET.get('tab', 'default')
-    items_per_page = 6 
     user = request.user
     recipe_list = []
     
@@ -157,10 +159,10 @@ def paginate_view(request):
     
     # 料理区分を条件にレシピレコードを取得
     cooking_category = CookingCategory.objects.get(name=category_name)
-    records = Recipe.objects.filter(cooking_category=cooking_category).order_by('id')[:get_count]
+    records = Recipe.objects.filter(cooking_category=cooking_category).order_by('id')[:RECIPE_LIST_COUNT]
     
     # ページネーターオブジェクトを取得
-    paginator = Paginator(records, items_per_page)
+    paginator = Paginator(records, RECIPE_LIST_PAGE)
     page = paginator.get_page(page_number)
     records = list(page.object_list.values())
     
@@ -193,71 +195,58 @@ def scraping(request):
     }
     
     if request.method == 'POST':
-        try:
-            recipe_data = {}
-            search_words = {}
-            
-            # お気に入り登録以外のレシピを削除
-            delete_not_favorite_recipe(request)
-            
-            # 料理区分を全て取得
-            cooking_category_obj_list = CookingCategory.objects.all()
-            
-            # 料理区分ごとにレシピを取得しDBへ登録
-            for cooking_category_obj in cooking_category_obj_list:
-                i = 0
-                cooking_category = cooking_category_obj.name
-                recipe_data[cooking_category] = {}
-                
-                # お気に入り情報より検索ワードを取得
-                search_word = get_liking_search_word(request, cooking_category_obj)
-                
-                # 検索ワードと料理区分を指定してレシピのURLリストを取得
-                recipe_detail_url = get_recipe_url_list(search_word, cooking_category, SCRAPING_COUNT)
-                
-                search_words[cooking_category] = search_word if search_word else "※キーワードなし"
-                
-                if not recipe_detail_url:
-                    continue
-            
-                # レシピデータを取得し各DBに登録
-                for i in range(SCRAPING_COUNT):
-                    # urlが設定されていない場合は当料理区分の処理を抜ける
-                    if not recipe_detail_url[i:]:
-                        break
-                    
-                    # レシピ詳細ページを取得
-                    recipe_object = get_recipe_detail(request, recipe_detail_url[i]["recipe_detail_url"], cooking_category_obj)
-                    
-                    # 取得エラーはスキップ
-                    if not recipe_object:
-                        continue
-                    
-                    recipe_data[cooking_category][recipe_object.pk] = {}
-                    recipe_data[cooking_category][recipe_object.pk] = recipe_object.name
-                    
-                    # スクレイピングを1秒待つ
-                    sleep(SCRAPING_SLEEP)
-                    
-            tmp = {
-                "initial_display": False,
-                "result": SUCCESS,
-                "message": "スクレイピング完了！",
-                "recipe_data": recipe_data,
-                "search_words": search_words,
-            }
-            params.update(tmp)
+        recipe_data = {}
+        search_words = {}
         
-        # エラー発生時はエラー内容を表示
-        except Exception as e:     
-            tmp = {
-                "initial_display": False,
-                "result": FAILED,
-                "message": f"予期しないエラーが発生しました: {e}",
-                "type": f"例外の型: {type(e).__name__}",
-                "detail": f"例外の詳細: {e.args}",
-                # "traceback": f"トレースバック情報: {tb_str}",
-            }
-            params.update(tmp)
+        # お気に入り登録以外のレシピを削除
+        delete_not_favorite_recipe(request)
+        
+        # 料理区分を全て取得
+        cooking_category_obj_list = CookingCategory.objects.all()
+        
+        # 料理区分ごとにレシピを取得しDBへ登録
+        for cooking_category_obj in cooking_category_obj_list:
+            i = 0
+            cooking_category = cooking_category_obj.name
+            recipe_data[cooking_category] = {}
+            
+            # お気に入り情報より検索ワードを取得
+            search_word = get_liking_search_word(request, cooking_category_obj)
+            
+            # 検索ワードと料理区分を指定してレシピのURLリストを取得
+            recipe_detail_url = get_recipe_url_list(search_word, cooking_category, SCRAPING_COUNT)
+            
+            search_words[cooking_category] = search_word if search_word else "※キーワードなし"
+            
+            if not recipe_detail_url:
+                continue
+        
+            # レシピデータを取得し各DBに登録
+            for i in range(SCRAPING_COUNT):
+                # urlが設定されていない場合は当料理区分の処理を抜ける
+                if not recipe_detail_url[i:]:
+                    break
+                
+                # レシピ詳細ページを取得
+                recipe_object = get_recipe_detail(request, recipe_detail_url[i]["recipe_detail_url"], cooking_category_obj)
+                
+                # 取得エラーはスキップ
+                if not recipe_object:
+                    continue
+                
+                recipe_data[cooking_category][recipe_object.pk] = {}
+                recipe_data[cooking_category][recipe_object.pk] = recipe_object.name
+                
+                # スクレイピングを1秒待つ
+                sleep(SCRAPING_SLEEP)
+                
+        tmp = {
+            "initial_display": False,
+            "result": SUCCESS,
+            "message": "スクレイピング完了！",
+            "recipe_data": recipe_data,
+            "search_words": search_words,
+        }
+        params.update(tmp)
             
     return render(request, 'recipe_app/scraping.html', params)

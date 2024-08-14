@@ -6,6 +6,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 from recipe_app.models import *
 from django.core.files.base import ContentFile
+from django.db.models import Q
 from .models import *
 from .constant import *
 
@@ -139,6 +140,7 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
         amount = None
         ingredients_name = None
         
+        # 食材名
         name_data = ingredients_data.select_one(".ingredient_name")
         if name_data:
             ingredients_name = name_data.get_text(strip=True)
@@ -148,7 +150,8 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
                 ingredients_name = ingredients_data.get_text(strip=True)
             else:
                 continue
-            
+        
+        # 分量
         data = ingredients_data.select_one(".ingredient_quantity")
         if data:
             amount = data.get_text(strip=True)
@@ -227,21 +230,49 @@ def get_liking_search_word(request, cooking_category_obj):
     search_word = ""
     user_obj = request.user
     
+    # 除外食材名
+    exclude_words = [
+        '水', '酒', '塩', 'しお', '味醂', 'みりん', '砂糖', 'さとう', '醤油', 'しょうゆ', '味噌', 'みそ',
+        'ごま油', 'サラダ油', '片栗粉', '酢', '七味', '一味', 'だし', '調味料', '、', '。', 'めんつゆ',
+         '：', '.', 'ID', 'コショウ', '胡椒', 'こしょう', '油', '粉', '汁', 'など', 'にがり', 'スープ', '煮',
+        ]
+    # 除外条件のQオブジェクトを作成
+    exclude_conditions = Q()
+    for word in exclude_words:
+        exclude_conditions |= Q(ingredientName__name__icontains=word)
+        
+    # キーワードから削除対象のパターン
+    patterns = [
+        r'【.*?】', r'\(.*?\)', r'（.*?）', r'{.*?}', r'★', r'☆', r'✿', r'、.*', 
+        r'■', r'□', r'▪', r'◆', r'◇', r'〇', r'○', r'●', r'◎', r'・', r'※', 
+        ]
+    # パターンを | で連結して正規表現を作成
+    combined_pattern = '|'.join(patterns)
+    
     # お気に入りリストを取得
     favorite_list = Favorite.objects.filter(custom_user=user_obj, recipe__cooking_category=cooking_category_obj)
     
     if favorite_list:
+        # お気に入りのレシピの食材すべてに重みづけを行う
         for record in favorite_list:
             # レシピの食材リストを取得
-            ingredient_list = Ingredients.objects.filter(recipe=record.recipe).exclude(amount=None)
+            ingredient_list = Ingredients.objects.filter(
+                    recipe=record.recipe
+                ).exclude(
+                    amount=None
+                ).exclude(
+                    exclude_conditions
+                )
             
             # 食材ごとに重みづけ
             for ingredient in ingredient_list:
-                name = ingredient.ingredientName.name
+                # 食材名から余計な装飾などを除外
+                name = re.sub(combined_pattern, '', ingredient.ingredientName.name)
                 
                 if name not in ingredients_weight:
                     ingredients_weight[name] = 0
-                    
+                
+                # 食材ごとに重みを加算
                 ingredients_weight[name] += 1
         
         # 合計値より確率を計算し食材名を選択
@@ -250,17 +281,12 @@ def get_liking_search_word(request, cooking_category_obj):
         items = list(ingredients_weight.keys())
         search_word = np.random.choice(items, p=normalized_weights)
         
-        # 削除対象のパターンを設定
-        patterns = [
-            r'【.*?】', r'\(.*?\)', r'（.*?）', r'{.*?}', r'★', r'☆', r'✿', r'、.*', 
-            r'■', r'□', r'▪', r'◆', r'◇', r'〇', r'○', r'●', r'◎', r'・', r'※', 
-            ]
-        # パターンを | で連結して正規表現を作成
-        combined_pattern = '|'.join(patterns)
-        # キーワードの不要部分を削除
-        cleaned_word = re.sub(combined_pattern, '', search_word)
+        print(ingredients_weight)
         
-    return cleaned_word
+        # # キーワードの不要部分を削除
+        # cleaned_word = re.sub(combined_pattern, '', search_word)
+        
+    return search_word
     
 
 """ お気に入りに登録していないレシピ削除 """
@@ -268,7 +294,7 @@ def delete_not_favorite_recipe(request):
     user_obj = request.user
     
     # ユーザーがお気に入りに登録していないレシピを取得
-    delete_recipes = Recipe.objects.exclude(id__in=Favorite.objects.filter(custom_user=user_obj, favorite_flg=True).values_list('recipe_id', flat=True))
+    delete_recipes = Recipe.objects.filter(id__in=Favorite.objects.filter(custom_user=user_obj, favorite_flg=False).values_list('recipe_id', flat=True))
     
     # 削除操作を実行
     delete_recipes.delete()

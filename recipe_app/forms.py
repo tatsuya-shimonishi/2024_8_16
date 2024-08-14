@@ -16,16 +16,11 @@ class CustomLoginForm(AuthenticationForm):
 class SignUpForm(UserCreationForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2']
     
     username = forms.CharField(
         label = "名前",
         widget = forms.TextInput(attrs={'class':'col-sm form-control', 'placeholder':'例）山田 太郎'}),
-    )
-    
-    email = forms.CharField(
-        label = "メールアドレス",
-        widget = forms.EmailInput(attrs={'class':'col-sm form-control', 'placeholder':'例）XXXX@XXX.XX'}),
     )
     
     password1 = forms.CharField(

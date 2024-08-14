@@ -12,7 +12,13 @@ def get_recipe(request, params, get_count):
         
         # 料理区分を指定してランダムにレシピ一覧を取得
         cooking_category = CookingCategory.objects.get(name=value)
-        records = list(Recipe.objects.filter(cooking_category=cooking_category).order_by('?')[:get_count])
+        
+        # ユーザーに紐づくレシピを取得
+        records = list(Recipe.objects.filter(cooking_category=cooking_category, id__in=Favorite.objects.filter(custom_user=user).values_list('recipe_id', flat=True)).order_by('?')[:get_count])
+        
+        # 取得できなかった場合はスキップ
+        if not records:
+            continue
         
         # お気に入り登録されているかの判定を追加
         for record in records:
