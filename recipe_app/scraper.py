@@ -283,9 +283,6 @@ def get_liking_search_word(request, cooking_category_obj):
         
         print(ingredients_weight)
         
-        # # キーワードの不要部分を削除
-        # cleaned_word = re.sub(combined_pattern, '', search_word)
-        
     return search_word
     
 
