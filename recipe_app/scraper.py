@@ -234,7 +234,9 @@ def get_liking_search_word(request, cooking_category_obj):
     exclude_words = [
         '水', '酒', '塩', 'しお', '味醂', 'みりん', '砂糖', 'さとう', '醤油', 'しょうゆ', '味噌', 'みそ',
         'ごま油', 'サラダ油', '片栗粉', '酢', '七味', '一味', 'だし', '調味料', '、', '。', 'めんつゆ',
-         '：', '.', 'ID', 'コショウ', '胡椒', 'こしょう', '油', '粉', '汁', 'など', 'にがり', 'スープ', '煮',
+        '：', '.', 'ID', 'コショウ', '胡椒', 'こしょう', '油', '粉', '汁', 'など', 'にがり', 'スープ', '煮',
+        'グラニュー糖', '卵黄', 'ゼラチン', 'バニラビーンズ', 'バニラエッセンス', 'チョコペン', '熱湯', 'お湯',
+        '中華ペースト', 'オリーブ', 'オイスターソース', 'ハーブソルト',
         ]
     # 除外条件のQオブジェクトを作成
     exclude_conditions = Q()
@@ -243,8 +245,9 @@ def get_liking_search_word(request, cooking_category_obj):
         
     # キーワードから削除対象のパターン
     patterns = [
-        r'【.*?】', r'\(.*?\)', r'（.*?）', r'{.*?}', r'★', r'☆', r'✿', r'、.*', 
-        r'■', r'□', r'▪', r'◆', r'◇', r'〇', r'○', r'●', r'◎', r'・', r'※', 
+        r'【.*$', r'\(.*$', r'（.*$', r'{.*$', r'★', r'☆', r'✿', r'、.*', 
+        r'■', r'□', r'▪', r'◆', r'◇', r'〇', r'○', r'●', r'◎', r'・', r'※',
+        r'〔.*$', r'チューブ入り', r'チューブ', r'冷凍',
         ]
     # パターンを | で連結して正規表現を作成
     combined_pattern = '|'.join(patterns)
@@ -281,7 +284,7 @@ def get_liking_search_word(request, cooking_category_obj):
         items = list(ingredients_weight.keys())
         search_word = np.random.choice(items, p=normalized_weights)
         
-        print(ingredients_weight)
+        print(cooking_category_obj.name, " ⇒" ,ingredients_weight)
         
     return search_word
     

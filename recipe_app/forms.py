@@ -20,7 +20,7 @@ class SignUpForm(UserCreationForm):
     
     username = forms.CharField(
         label = "名前",
-        widget = forms.TextInput(attrs={'class':'col-sm form-control', 'placeholder':'例）山田 太郎'}),
+        widget = forms.TextInput(attrs={'class':'col-sm form-control', 'placeholder':'例）山田太郎'}),
     )
     
     password1 = forms.CharField(

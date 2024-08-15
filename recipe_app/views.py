@@ -157,9 +157,9 @@ def paginate_view(request):
     elif tab == 'tab4':
         category_name = COOKING_CATEGORY_DESERT
     
-    # 料理区分を条件にレシピレコードを取得
+    # 料理区分とユーザを条件にレシピレコードを取得
     cooking_category = CookingCategory.objects.get(name=category_name)
-    records = Recipe.objects.filter(cooking_category=cooking_category).order_by('id')[:RECIPE_LIST_COUNT]
+    records = Recipe.objects.filter(cooking_category=cooking_category, id__in=Favorite.objects.filter(custom_user=user).values_list('recipe_id', flat=True)).order_by('id')[:RECIPE_LIST_COUNT]
     
     # ページネーターオブジェクトを取得
     paginator = Paginator(records, RECIPE_LIST_PAGE)
