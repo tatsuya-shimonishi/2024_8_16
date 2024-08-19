@@ -97,7 +97,7 @@ def recipe_detail(request, recipe_id):
 
     # お気に入り登録されているか確認
     user = request.user
-    is_favorite = Favorite.objects.filter(custom_user=user, recipe=recipe_obj).exists()
+    is_favorite = Favorite.objects.filter(custom_user=user, recipe=recipe_obj, favorite_flg=True).exists()
     
     add_params = {
         'recipe': recipe_obj,

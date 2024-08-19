@@ -15,7 +15,7 @@ def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
     
     recipes = []
     search_query = cooking_category + " " + search_word
-    range_max = (recipe_get_count % 11) + 2
+    range_max = (recipe_get_count - 1) // 20 + 2
     
     for i in range(1, range_max):
         base_url = 'https://cookpad.com/search/'
@@ -37,8 +37,9 @@ def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
         # 取得結果を解析
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        for item in soup.select('.recipe-preview'):
-            title = item.select_one('.recipe-title').get_text(strip=True)
+        # for item in soup.select('.recipe-preview'):
+        for item in soup.select('[data-search-tracking-target="result"]'):
+            title = item.select_one('h2').get_text(strip=True)
             url = item.select_one('a')['href']
             
             recipes.append({
@@ -48,7 +49,7 @@ def get_recipe_url_list(search_word, cooking_category, recipe_get_count):
             
             # スクレイピングを待つ
             sleep(SCRAPING_SLEEP)
-        
+    
     return recipes
 
 
@@ -72,7 +73,9 @@ def save_image(img_url, model_obj):
 def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     base_url = 'https://cookpad.com'
     request_url = base_url + recipe_detail_url
+    recipe_id = request_url.split('/')[3].split('-')[0]
     response = requests.get(request_url)
+    memo = "※特になし"
         
     if response.status_code != 200:
         return False
@@ -81,7 +84,7 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     
     # 作成者名管理 ---------------------------------
     # 作者名取得
-    recipe_author_name = soup.select_one('#recipe_author_name').get_text(strip=True)
+    recipe_author_name = soup.select_one('.clamp-1').select_one('span').get_text(strip=True)
     
     # 更新or登録
     Author.objects.update_or_create(
@@ -91,18 +94,22 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     
     # レシピ管理 -----------------------------------
     # レシピ名
-    title =  soup.select_one(".recipe-title").get_text(strip=True)
+    title =  soup.select_one('h1').get_text(strip=True)
+    
     # 作成者ID
     author_obj = Author.objects.get(name = recipe_author_name)
+    
     # 食数
     servings = ""
-    ingredients_tmp = soup.select_one('#ingredients')
-    data = ingredients_tmp.select_one(".servings_for")
+    serving_recipe_id = "serving_recipe" + recipe_id
+    data = soup.select_one(f'#{serving_recipe_id}')
     if data:
         servings = data.get_text(strip=True)
+        
     # メモ
-    memo_tmp = soup.select_one('#memo_wrapper')
-    memo = memo_tmp.select_one('.text_content').get_text(strip=True)
+    memo_tmp = soup.select_one('#advice')
+    if memo_tmp:
+        memo = memo_tmp.select_one('p').get_text(strip=True)
     
     # レシピレコードを更新or登録
     recipe_object, created =Recipe.objects.update_or_create(
@@ -118,16 +125,16 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     )
     
     # レシピ画像
-    img_tmp = soup.select_one('#main-photo')
-    img_url = img_tmp.select_one('img')['src']
-    
-    # 画像を保存
-    save_image(img_url, recipe_object)   
+    img_url = soup.select_one('.tofu_image img')
+    if img_url:
+        # 画像を保存
+        save_image(img_url['src'], recipe_object)   
     
     # 食材名管理、材料管理 --------------------------------------
-    # 食材名、分量のリスト
-    ingredients_list = soup.select(".ingredient_row")
     count = 0
+    
+    # 食材名、分量のリスト
+    ingredients_list = soup.select(".ingredient-list li")
     
     # レシピ管理をオブジェクト化
     recipe_obj = Recipe.objects.get(url=request_url)
@@ -135,24 +142,18 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     # 1レコードずつ食材名、分量を取得
     for ingredients_data in ingredients_list:
         count += 1
-        name_data = None
-        data = None
-        amount = None
-        ingredients_name = None
+        name_data = ""
+        data = ""
+        amount = ""
+        ingredients_name = ""
         
         # 食材名
-        name_data = ingredients_data.select_one(".ingredient_name")
+        name_data = ingredients_data.select_one("span")
         if name_data:
             ingredients_name = name_data.get_text(strip=True)
-        else:
-            ingredients_data = ingredients_data.select_one(".ingredient_category")
-            if ingredients_data:
-                ingredients_name = ingredients_data.get_text(strip=True)
-            else:
-                continue
-        
+                    
         # 分量
-        data = ingredients_data.select_one(".ingredient_quantity")
+        data = ingredients_data.select_one("bdi")
         if data:
             amount = data.get_text(strip=True)
 
@@ -182,13 +183,15 @@ def get_recipe_detail(request, recipe_detail_url, cooking_category_obj):
     
     # 作り方全体データを取得
     steps_data = soup.select_one('#steps')
-    instruction_data = steps_data.select('.instruction')
+    instruction_data = steps_data.select('li')
     
     # 順番、画像、詳細の各レコードを取得
     for step_data in instruction_data:
         step_order += 1
-        step_text = step_data.select_one('.step_text').get_text(strip=True)
-    
+        
+        # 作り方テキストを取得
+        step_text = step_data.select('li > div')[1].get_text(strip=True)
+        
         # 作り方管理のレコードを更新or登録
         instruction_object, created = Instruction.objects.update_or_create(
             recipe=recipe_obj,
@@ -236,7 +239,7 @@ def get_liking_search_word(request, cooking_category_obj):
         'ごま油', 'サラダ油', '片栗粉', '酢', '七味', '一味', 'だし', '調味料', '、', '。', 'めんつゆ',
         '：', '.', 'ID', 'コショウ', '胡椒', 'こしょう', '油', '粉', '汁', 'など', 'にがり', 'スープ', '煮',
         'グラニュー糖', '卵黄', 'ゼラチン', 'バニラビーンズ', 'バニラエッセンス', 'チョコペン', '熱湯', 'お湯',
-        '中華ペースト', 'オリーブ', 'オイスターソース', 'ハーブソルト',
+        '中華ペースト', 'オリーブ', 'オイスターソース', 'ハーブソルト', 'あれば',
         ]
     # 除外条件のQオブジェクトを作成
     exclude_conditions = Q()
@@ -245,9 +248,9 @@ def get_liking_search_word(request, cooking_category_obj):
         
     # キーワードから削除対象のパターン
     patterns = [
-        r'【.*$', r'\(.*$', r'（.*$', r'{.*$', r'★', r'☆', r'✿', r'、.*', 
+        r'【.*】', r'\(.*\)', r'（.*\)', r'\(.*）', r'（.*）', r'{.*}', r'★', r'☆', r'✿', r'、.*', 
         r'■', r'□', r'▪', r'◆', r'◇', r'〇', r'○', r'●', r'◎', r'・', r'※',
-        r'〔.*$', r'チューブ入り', r'チューブ', r'冷凍',
+        r'〔.*$', r'チューブ入り', r'チューブ', r'冷凍', r'[A-Za-z0-9]',
         ]
     # パターンを | で連結して正規表現を作成
     combined_pattern = '|'.join(patterns)
